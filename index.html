@@ -1477,20 +1477,41 @@ function drawChart(hoverIdx) {
   data.forEach((d,i) => { const x=xOf(i),y=yPrice(d.cash); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
   ctx.stroke();
 
-  // ── Spread panel: area fill ──
-  const gradSp = ctx.createLinearGradient(0, spTop, 0, spBot);
-  gradSp.addColorStop(0, 'rgba(245,158,11,0.15)');
-  gradSp.addColorStop(1, 'rgba(245,158,11,0.01)');
+  // ── Spread panel: area fill（正值=琥珀，負值=紅色）──
+  const z0 = ySpread(0);
+  // Positive area (Contango)
+  ctx.save();
+  ctx.beginPath(); ctx.rect(PAD.left, spTop, cW, z0 - spTop); ctx.clip();
+  const gradSpPos = ctx.createLinearGradient(0, spTop, 0, z0);
+  gradSpPos.addColorStop(0, 'rgba(245,158,11,0.20)');
+  gradSpPos.addColorStop(1, 'rgba(245,158,11,0.02)');
   ctx.beginPath();
   data.forEach((d,i) => { const x=xOf(i),y=ySpread(d.fwd-d.cash); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
-  ctx.lineTo(xOf(N-1), ySpread(0)); ctx.lineTo(xOf(0), ySpread(0)); ctx.closePath();
-  ctx.fillStyle = gradSp; ctx.fill();
+  ctx.lineTo(xOf(N-1), z0); ctx.lineTo(xOf(0), z0); ctx.closePath();
+  ctx.fillStyle = gradSpPos; ctx.fill();
+  ctx.restore();
+  // Negative area (Backwardation) — 紅色醒目
+  ctx.save();
+  ctx.beginPath(); ctx.rect(PAD.left, z0, cW, spBot - z0); ctx.clip();
+  const gradSpNeg = ctx.createLinearGradient(0, z0, 0, spBot);
+  gradSpNeg.addColorStop(0, 'rgba(239,68,68,0.30)');
+  gradSpNeg.addColorStop(1, 'rgba(239,68,68,0.06)');
+  ctx.beginPath();
+  data.forEach((d,i) => { const x=xOf(i),y=ySpread(d.fwd-d.cash); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.lineTo(xOf(N-1), z0); ctx.lineTo(xOf(0), z0); ctx.closePath();
+  ctx.fillStyle = gradSpNeg; ctx.fill();
+  ctx.restore();
 
-  // ── Spread line ──
-  ctx.beginPath();
-  ctx.strokeStyle = '#f59e0b'; ctx.lineWidth = 1.8;
-  data.forEach((d,i) => { const x=xOf(i),y=ySpread(d.fwd-d.cash); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
-  ctx.stroke();
+  // ── Spread line（依正負變色）──
+  for (let i = 1; i < N; i++) {
+    const sp = data[i].fwd - data[i].cash;
+    ctx.beginPath();
+    ctx.strokeStyle = sp < 0 ? '#ef4444' : '#f59e0b';
+    ctx.lineWidth = 1.8;
+    ctx.moveTo(xOf(i-1), ySpread(data[i-1].fwd - data[i-1].cash));
+    ctx.lineTo(xOf(i), ySpread(sp));
+    ctx.stroke();
+  }
 
   // ── Hover crosshair ──
   if (hoverIdx !== null && hoverIdx >= 0 && hoverIdx < N) {
@@ -1711,9 +1732,10 @@ tableRows.forEach((row, i) => {
   const stockPct = (row.stock/maxStock*100).toFixed(1);
   const cnVal = cnAlMap.get(row.date);
 
-  tbody.innerHTML += `<tr>
-    <td>${fmtDateFull(row.date)}</td>
-    <td class="price-cell">$${fmtNum(row.cash)}</td>
+  const isBackward = row.cash > row.fwd;
+  tbody.innerHTML += `<tr${isBackward ? ' style="background:rgba(239,68,68,0.07);border-left:3px solid #ef4444;"' : ''}>
+    <td>${fmtDateFull(row.date)}${isBackward ? ' <span style="font-size:10px;color:#ef4444;font-weight:700;letter-spacing:0.3px">▲現貨升水</span>' : ''}</td>
+    <td class="price-cell" style="${isBackward?'color:#dc2626;font-weight:700;':''}">${isBackward?'🔴 ':''} $${fmtNum(row.cash)}</td>
     <td>${prevRow?`<span class="change-badge ${cls}">${arrow} ${Math.abs(change).toFixed(2)}</span>`:'—'}</td>
     <td class="price-cell">$${fmtNum(row.fwd)}</td>
     <td class="price-cell">${cnVal!==undefined ? '¥'+fmtNum(cnVal) : '—'}</td>
