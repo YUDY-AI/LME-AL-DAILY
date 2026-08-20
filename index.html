@@ -8,8 +8,8 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #0f172a;
-  color: #f8fafc;
+  background: #f0f4f8;
+  color: #1e293b;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -20,131 +20,145 @@ body {
 
 .container { max-width: 720px; width: 100%; }
 
-/* ── Header ── */
+/* ── Header card ── */
+.header-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 7px solid #3D5E54;
+  border-radius: 14px;
+  padding: 32px 36px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+}
 .brand {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 3px;
-  color: #64748b;
+  letter-spacing: 2.5px;
+  color: #3D5E54;
   text-transform: uppercase;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 h1 {
-  font-size: clamp(40px, 8vw, 72px);
+  font-size: clamp(36px, 7vw, 60px);
   font-weight: 800;
-  letter-spacing: -2px;
+  letter-spacing: -1.5px;
   line-height: 1;
-  color: #f1f5f9;
+  color: #0f172a;
   margin-bottom: 8px;
 }
 h1 span { color: #B59565; }
 .subtitle {
-  font-size: 15px;
+  font-size: 14px;
   color: #64748b;
-  margin-bottom: 28px;
-  font-weight: 400;
+  margin-bottom: 20px;
 }
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 40px;
+  gap: 7px;
 }
 .tag {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  background: rgba(181,149,101,0.12);
-  border: 1px solid rgba(181,149,101,0.25);
-  color: #B59565;
+  letter-spacing: 0.3px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #475569;
   border-radius: 20px;
-  padding: 5px 12px;
+  padding: 4px 11px;
 }
+.tag.green { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+.tag.gold  { background: #fefce8; border-color: #fde68a; color: #92400e; }
+.tag.red   { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
 
 /* ── Stats ── */
 .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 40px;
+  gap: 14px;
+  margin-bottom: 20px;
 }
 .stat-card {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 18px 20px;
-  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:3px;
+  background: linear-gradient(90deg, #3D5E54, #6B9A8E);
 }
 .stat-val {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #0f172a;
   font-variant-numeric: tabular-nums;
 }
 .stat-lbl {
-  font-size: 11px;
-  color: #475569;
+  font-size: 10px;
+  color: #94a3b8;
   margin-top: 4px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.7px;
 }
 
 /* ── Entry button ── */
 .entry {
   display: block;
-  background: #B59565;
-  color: #0f172a;
+  background: #3D5E54;
+  color: #ffffff;
   text-align: center;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.5px;
   border-radius: 12px;
-  padding: 18px 32px;
-  transition: background 0.2s, transform 0.1s;
-  margin-bottom: 16px;
+  padding: 17px 32px;
+  transition: background 0.15s, transform 0.1s;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(61,94,84,0.20);
 }
-.entry:hover { background: #c8aa7a; transform: translateY(-1px); }
+.entry:hover { background: #2e4940; transform: translateY(-1px); }
 .entry-sub {
   text-align: center;
-  font-size: 12px;
-  color: #475569;
-}
-
-/* ── Divider ── */
-.divider {
-  border: none;
-  border-top: 1px solid rgba(255,255,255,0.07);
-  margin: 48px 0 32px;
+  font-size: 11px;
+  color: #94a3b8;
 }
 
 /* ── Footer ── */
 .footer {
   text-align: center;
   font-size: 11px;
-  color: #334155;
+  color: #cbd5e1;
   letter-spacing: 0.5px;
+  margin-top: 36px;
 }
 
 @media (max-width: 480px) {
   .stats { grid-template-columns: 1fr 1fr; }
+  .header-card { padding: 24px 20px; }
 }
 </style>
 </head>
 <body>
 <div class="container">
 
-  <div class="brand">LME · Aluminium · Daily</div>
-  <h1>LME AL<br><span>DAILY</span></h1>
-  <div class="subtitle">Peter 專屬鋁金屬行情追蹤｜每日自動更新</div>
-
-  <div class="tags">
-    <span class="tag">LME 鋁現金結算</span>
-    <span class="tag">3M 遠期</span>
-    <span class="tag">LME 庫存</span>
-    <span class="tag">負價差警示</span>
-    <span class="tag">台指期夜盤</span>
-    <span class="tag">月均價分析</span>
+  <div class="header-card">
+    <div class="brand">LME · Aluminium · Daily</div>
+    <h1>LME AL <span>DAILY</span></h1>
+    <div class="subtitle">Peter 專屬鋁金屬行情追蹤｜每日自動更新</div>
+    <div class="tags">
+      <span class="tag green">LME 鋁現金結算</span>
+      <span class="tag green">3M 遠期</span>
+      <span class="tag">LME 庫存走勢</span>
+      <span class="tag red">負價差警示</span>
+      <span class="tag gold">台指期夜盤</span>
+      <span class="tag">月均價分析</span>
+    </div>
   </div>
 
   <div class="stats">
@@ -154,7 +168,7 @@ h1 span { color: #B59565; }
     </div>
     <div class="stat-card">
       <div class="stat-val" id="latestPrice">—</div>
-      <div class="stat-lbl">最新現金價 (USD/MT)</div>
+      <div class="stat-lbl">最新現金價 USD/MT</div>
     </div>
     <div class="stat-card">
       <div class="stat-val">每天</div>
@@ -162,24 +176,19 @@ h1 span { color: #B59565; }
     </div>
   </div>
 
-  <a class="entry" href="dashboard.html">📊 開啟價格 Dashboard</a>
-  <div class="entry-sub">每日 07:30 更新 · 08:00 推送</div>
+  <a class="entry" href="dashboard.html">📊 開啟完整 Dashboard</a>
+  <div class="entry-sub">每日 07:30 更新 · 08:00 推送至 GitHub Pages</div>
 
-  <hr class="divider">
   <div class="footer">LME AL DAILY · Peter 專屬情報 · 每個工作日自動更新</div>
 
 </div>
-
 <script>
-// 從 dashboard.html 抓取最新日期與價格（GitHub Pages 上同 origin）
 async function loadStats() {
   try {
     const res = await fetch('dashboard.html');
     const text = await res.text();
-    // 找最新日期
     const dateM = text.match(/date:"(\d{4}-\d{2}-\d{2})"/);
     if (dateM) document.getElementById('latestDate').textContent = dateM[1];
-    // 找最新 cash 價
     const priceM = text.match(/cash:([\d.]+)/);
     if (priceM) document.getElementById('latestPrice').textContent = '$' + Number(priceM[1]).toLocaleString();
   } catch(e) {}
