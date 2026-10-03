@@ -1,199 +1,1913 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LME AL DAILY｜Peter 鋁金屬價格追蹤</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LME 鋁價日報</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #f0f4f8;
-  color: #1e293b;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 24px;
-}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f0f4f8;
+    color: #1e293b;
+    min-height: 100vh;
+    padding: 32px 24px;
+    position: relative;
+  }
+  .watermark-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    opacity: 0.045;
+  }
+  .watermark-item {
+    flex: 0 0 240px;
+    height: 130px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-22deg);
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e293b;
+    white-space: nowrap;
+    letter-spacing: 1px;
+    user-select: none;
+  }
+  .header {
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto 32px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 7px solid #3D5E54;
+    border-radius: 14px;
+    padding: 22px 32px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .header-inner { display: flex; align-items: center; gap: 0; }
+  .header-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding-right: 28px;
+    flex-shrink: 0;
+  }
+  .logo-company {
+    font-size: 11px;
+    font-weight: 700;
+    color: #3D5E54;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+  .header-divider {
+    width: 1px;
+    height: 52px;
+    background: #e2e8f0;
+    flex-shrink: 0;
+    margin-right: 28px;
+  }
+  .header-text { flex: 1; }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: 0.2px;
+    line-height: 1.2;
+  }
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #64748b;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
+  .header-badge span { color: #3D5E54; font-weight: 600; }
+  .lang-switch {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #3D5E54;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 4px 12px;
+    text-decoration: none;
+  }
+  .lang-switch:hover { background: #e2e8f0; }
+  .badge-ip     { background: #ede9fe; border-color: #ddd6fe; }
+  .badge-ip span     { color: #5b21b6; }
+  .badge-author { background: #dbeafe; border-color: #bfdbfe; }
+  .badge-author span { color: #1e40af; }
+  .badge-date   { background: #dcfce7; border-color: #bbf7d0; }
+  .badge-date span   { color: #166534; }
+  .badge-data   { background: #fef3c7; border-color: #fde68a; }
+  .badge-data span   { color: #92400e; }
+  .badge-legal  { background: #fce7f3; border-color: #fbcfe8; }
+  .badge-legal span  { color: #9d174d; }
 
-.container { max-width: 720px; width: 100%; }
+  .kpi-section { max-width: 1100px; margin: 0 auto 28px; }
+  .kpi-group-label {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+  .kpi-row { display: grid; gap: 14px; }
+  .kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .kpi-card.blue::before   { background: linear-gradient(90deg, #3D5E54, #6B9A8E); }
+  .kpi-card.green::before  { background: linear-gradient(90deg, #1e3a5f, #2d6096); }
+  .kpi-card.purple::before { background: linear-gradient(90deg, #B59565, #D4B98A); }
+  .kpi-card.red::before    { background: linear-gradient(90deg, #94a3b8, #cbd5e1); }
+  .kpi-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; }
+  .kpi-value { font-size: 24px; font-weight: 700; color: #0f172a; margin-top: 6px; }
+  .kpi-change { font-size: 12px; margin-top: 4px; font-weight: 500; }
+  .kpi-change.up      { color: #059669; }
+  .kpi-change.down    { color: #dc2626; }
+  .kpi-change.neutral { color: #94a3b8; }
+  .kpi-extra { margin-top: 10px; padding-top: 8px; border-top: 1px solid #f1f5f9; }
+  .kpi-extra-row { display: flex; justify-content: space-between; align-items: center; margin-top: 3px; }
+  .kpi-extra-label { font-size: 10px; color: #94a3b8; }
+  .kpi-extra-val { font-size: 11px; color: #475569; font-weight: 600; font-variant-numeric: tabular-nums; }
 
-/* ── Header card ── */
-.header-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-left: 7px solid #3D5E54;
-  border-radius: 14px;
-  padding: 32px 36px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-  margin-bottom: 20px;
-}
-.brand {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2.5px;
-  color: #3D5E54;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-}
-h1 {
-  font-size: clamp(36px, 7vw, 60px);
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  line-height: 1;
-  color: #0f172a;
-  margin-bottom: 8px;
-}
-h1 span { color: #B59565; }
-.subtitle {
-  font-size: 14px;
-  color: #64748b;
-  margin-bottom: 20px;
-}
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-.tag {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  color: #475569;
-  border-radius: 20px;
-  padding: 4px 11px;
-}
-.tag.green { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
-.tag.gold  { background: #fefce8; border-color: #fde68a; color: #92400e; }
-.tag.red   { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+  .chart-container {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px 28px 16px;
+    max-width: 1100px;
+    margin: 0 auto 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .chart-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .chart-title { font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
+  .chart-legend { display: flex; gap: 20px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #64748b; }
+  .legend-dot { width: 28px; height: 2px; border-radius: 1px; }
+  .panel-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.6px; margin: 10px 0 2px; }
 
-/* ── Stats ── */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  margin-bottom: 20px;
-}
-.stat-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 18px 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  position: relative;
-  overflow: hidden;
-}
-.stat-card::before {
-  content:'';
-  position:absolute; top:0; left:0; right:0; height:3px;
-  background: linear-gradient(90deg, #3D5E54, #6B9A8E);
-}
-.stat-val {
-  font-size: 20px;
-  font-weight: 700;
-  color: #0f172a;
-  font-variant-numeric: tabular-nums;
-}
-.stat-lbl {
-  font-size: 10px;
-  color: #94a3b8;
-  margin-top: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.7px;
-}
+  #chartCanvas, #chartCanvasCN { display: block; width: 100%; cursor: crosshair; }
 
-/* ── Entry button ── */
-.entry {
-  display: block;
-  background: #3D5E54;
-  color: #ffffff;
-  text-align: center;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  border-radius: 12px;
-  padding: 17px 32px;
-  transition: background 0.15s, transform 0.1s;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 8px rgba(61,94,84,0.20);
-}
-.entry:hover { background: #2e4940; transform: translateY(-1px); }
-.entry-sub {
-  text-align: center;
-  font-size: 11px;
-  color: #94a3b8;
-}
+  .tooltip-box {
+    position: absolute;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 14px;
+    pointer-events: none;
+    font-size: 12px;
+    line-height: 1.8;
+    display: none;
+    z-index: 10;
+    min-width: 180px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  }
+  .tooltip-date { font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
+  .tooltip-row { display: flex; justify-content: space-between; gap: 16px; }
+  .tooltip-label { color: #64748b; }
+  .tooltip-val { font-weight: 600; font-variant-numeric: tabular-nums; color: #0f172a; }
+  .tv-blue  { color: #2563eb; }
+  .tv-green { color: #059669; }
 
-/* ── Footer ── */
-.footer {
-  text-align: center;
-  font-size: 11px;
-  color: #cbd5e1;
-  letter-spacing: 0.5px;
-  margin-top: 36px;
-}
+  .table-container {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    max-width: 1100px;
+    margin: 0 auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .table-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    background: #f8fafc;
+  }
+  .table-title { font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: #f8fafc; }
+  th {
+    padding: 11px 24px;
+    text-align: right;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #94a3b8;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  th:first-child { text-align: left; }
+  tbody tr { border-bottom: 1px solid #f8fafc; transition: background 0.12s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f8fafc; }
+  td {
+    padding: 11px 24px;
+    font-size: 13px;
+    text-align: right;
+    color: #334155;
+  }
+  td:first-child { text-align: left; color: #64748b; font-size: 12px; white-space: nowrap; }
+  .price-cell { font-variant-numeric: tabular-nums; font-weight: 500; color: #1e293b; }
+  .change-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+  }
+  .change-badge.up   { background: #dcfce7; color: #16a34a; }
+  .change-badge.down { background: #fee2e2; color: #dc2626; }
+  .change-badge.flat { background: #f1f5f9; color: #94a3b8; }
+  .month-divider td {
+    padding: 4px 24px;
+    background: #f8fafc;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    border-top: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .stock-bar-container { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+  .stock-bar-bg { width: 60px; height: 5px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+  .stock-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #4f46e5, #818cf8); }
+  /* Commentary */
+  .commentary-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #B59565;
+    border-radius: 14px;
+    padding: 22px 28px;
+    max-width: 1100px;
+    margin: 0 auto 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .commentary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .commentary-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .commentary-date {
+    font-size: 11px;
+    color: #94a3b8;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
+  .commentary-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .commentary-sublist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .commentary-sublist.lvl1 { margin-left: 34px; }
+  .commentary-sublist.lvl2 { margin-left: 20px; margin-top: 4px; }
+  .commentary-subitem {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #475569;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .commentary-subitem .sub-marker {
+    flex-shrink: 0;
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 12px;
+    margin-top: 1px;
+  }
+  .commentary-subitem.lvl2 { font-size: 12.5px; color: #64748b; }
+  /* Outlook quadrant matrix */
+  .quadrant-axis-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-bottom: 16px; }
+  .quadrant-axis { font-size: 12px; font-weight: 700; text-align: center; padding: 6px; border-radius: 20px; letter-spacing: 0.3px; }
+  .quadrant-axis.bull { background: #dcfce7; color: #166534; }
+  .quadrant-axis.bear { background: #fee2e2; color: #b91c1c; }
+  .quadrant-section-label { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin: 16px 0 10px; }
+  .quadrant-section-label:first-of-type { margin-top: 0; }
+  .quadrant-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .quadrant-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; }
+  .quadrant-box-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .quadrant-icon { width: 34px; height: 34px; border-radius: 50%; background: #ffffff; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+  .quadrant-box-title { font-weight: 700; font-size: 14.5px; color: #0f172a; }
+  .quadrant-box-desc { font-size: 12.5px; color: #64748b; line-height: 1.6; margin-bottom: 10px; }
+  .quadrant-tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .quadrant-tag.bull { background: #dcfce7; color: #166534; }
+  .quadrant-tag.bear { background: #fee2e2; color: #b91c1c; }
+  @media (max-width: 720px) {
+    .quadrant-axis-row, .quadrant-grid { grid-template-columns: 1fr; }
+  }
+  /* Trade board (求購 / 銷售) */
+  .trade-board { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .trade-col-title {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+  .trade-buy  { background: #dbeafe; color: #1e40af; }
+  .trade-sell { background: #dcfce7; color: #166534; }
+  .trade-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .trade-list li {
+    font-size: 13.5px;
+    color: #334155;
+    padding: 9px 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+  }
+  .trade-subgroup-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 14px 0 8px;
+  }
+  .trade-subgroup-title:first-of-type { margin-top: 0; }
+  @media (max-width: 600px) {
+    .trade-board { grid-template-columns: 1fr; gap: 16px; }
+  }
+  .commentary-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #334155;
+  }
+  .commentary-num {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 1px;
+  }
+  .c-obs   { background: #f1f5f9; color: #64748b; }
+  .c-warn  { background: #fef3c7; color: #92400e; }
+  .c-bull  { background: #dcfce7; color: #166534; }
+  .c-act   { background: #dbeafe; color: #1e40af; }
+  .commentary-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 10px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .tag-obs  { background: #e0f2fe; color: #0369a1; }
+  .tag-analysis { background: #ede9fe; color: #5b21b6; }
+  .c-analysis    { background: #ede9fe; color: #5b21b6; }
+  .tag-warn { background: #fef3c7; color: #92400e; }
+  .tag-bull { background: #dcfce7; color: #166534; }
+  .tag-act  { background: #dbeafe; color: #1e40af; }
+  .tag-strat { background: #f3e8ff; color: #6b21a8; }
+  .c-strat   { background: #f3e8ff; color: #6b21a8; }
+  .tag-risk  { background: #fee2e2; color: #991b1b; }
+  .c-risk    { background: #fee2e2; color: #991b1b; }
+  .tag-dem   { background: #fff7ed; color: #9a3412; }
+  .c-dem     { background: #fff7ed; color: #9a3412; }
 
-@media (max-width: 480px) {
-  .stats { grid-template-columns: 1fr 1fr; }
-  .header-card { padding: 24px 20px; }
-}
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: #cbd5e1;
+    margin-top: 24px;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  @media (max-width: 768px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr) !important; }
+    td, th { padding: 10px 12px; }
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 16px 12px; }
+
+    /* Header */
+    .header { padding: 16px 18px; }
+    .header-inner { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .header-divider { display: none; }
+    .header-logo svg { width: 130px !important; }
+    .header h1 { font-size: 18px; }
+    .header-meta { gap: 6px; flex-wrap: wrap; }
+    .header-badge { font-size: 10px; padding: 2px 8px; }
+
+    /* KPI */
+    .kpi-row { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
+    .kpi-card { padding: 14px 16px; }
+    .kpi-value { font-size: 20px; }
+    .kpi-label { font-size: 10px; }
+    .kpi-change { font-size: 11px; }
+    .kpi-extra-label, .kpi-extra-val { font-size: 10px; }
+    .kpi-group-label { font-size: 9px; }
+
+    /* Chart */
+    .chart-container { padding: 16px 12px 10px; }
+    .chart-top { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .chart-legend { flex-wrap: wrap; gap: 10px; }
+    .legend-item { font-size: 11px; }
+
+    /* Table: hide 3M and stock bar columns */
+    .table-container { overflow-x: hidden; }
+    table th:nth-child(4),
+    table td:nth-child(4),
+    table th:nth-child(5),
+    table td:nth-child(5),
+    table th:nth-child(6),
+    table td:nth-child(6) { display: none; }
+    td, th { padding: 9px 12px; font-size: 12px; }
+    .table-header-row { padding: 14px 16px; }
+  }
+
+  /* ── 台指期區塊 ── */
+  .tx-badge { display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 9px;border-radius:10px; }
+  .tx-live   { background:#dcfce7;color:#166534; }
+  .tx-night  { background:#dbeafe;color:#1e40af; }
+  .tx-closed { background:#f1f5f9;color:#64748b; }
+  .tx-warn   { background:#fef3c7;color:#92400e; }
+  .tx-error  { background:#fee2e2;color:#dc2626; }
+  .tx-extlink { display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#3D5E54;text-decoration:none;padding:4px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:20px;margin-top:6px; }
+  .tx-extlink:hover { background:#dcfce7; }
 </style>
 </head>
 <body>
-<div class="container">
+<div class="watermark-layer" id="watermarkLayer"></div>
 
-  <div class="header-card">
-    <div class="brand">LME · Aluminium · Daily</div>
-    <h1>LME AL <span>DAILY</span></h1>
-    <div class="subtitle">Peter 專屬鋁金屬行情追蹤｜每日自動更新</div>
-    <div class="tags">
-      <span class="tag green">LME 鋁現金結算</span>
-      <span class="tag green">3M 遠期</span>
-      <span class="tag">LME 庫存走勢</span>
-      <span class="tag red">負價差警示</span>
-      <span class="tag gold">台指期夜盤</span>
-      <span class="tag">月均價分析</span>
+<div class="header">
+  <a href="en.html" class="lang-switch">EN</a>
+  <div class="header-inner">
+  <div class="header-logo">
+    <svg viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg" style="width:200px;height:auto;">
+        
+
+        <!-- Wordmark group -->
+        <g id="wmGroup" class="" transform="translate(35,-105) scale(3)">
+          <g transform="translate(-33.82,-49.53)">
+    <path class="wm-path" fill="#3D5E54" d="M 234.027344 146.175781 C 234.078125 146.203125 234.128906 146.226562 234.179688 146.25 C 234.269531 146.132812 234.367188 146.019531 234.445312 145.898438 C 236.492188 142.640625 238.527344 139.371094 240.59375 136.121094 C 243.449219 131.628906 246.289062 127.125 249.214844 122.675781 C 250.769531 120.308594 253.132812 119.214844 255.914062 118.941406 C 256.183594 118.914062 256.59375 118.636719 256.640625 118.410156 C 256.757812 117.875 256.34375 117.792969 255.878906 117.792969 C 251.628906 117.792969 247.371094 117.777344 243.117188 117.769531 C 241.886719 117.769531 240.652344 117.757812 239.421875 117.820312 C 239.210938 117.832031 239.015625 118.191406 238.8125 118.390625 C 239 118.574219 239.160156 118.8125 239.382812 118.929688 C 239.550781 119.019531 239.804688 118.945312 240.019531 118.960938 C 242.203125 119.117188 243.734375 120.214844 244.128906 121.929688 C 244.429688 123.242188 244.054688 124.429688 243.367188 125.539062 C 241.882812 127.953125 240.410156 130.371094 238.894531 132.765625 C 238.355469 133.617188 237.890625 134.4375 238.097656 135.507812 C 238.164062 135.847656 238.074219 136.253906 237.941406 136.582031 C 236.9375 139.0625 235.90625 141.53125 234.886719 144.003906 C 234.589844 144.722656 234.3125 145.453125 234.027344 146.175781 M 233.984375 146.769531 C 233.914062 146.761719 233.84375 146.753906 233.769531 146.746094 C 232.628906 149.53125 231.492188 152.316406 230.339844 155.101562 C 228.695312 159.082031 227.058594 163.070312 225.378906 167.039062 C 224.820312 168.359375 222.902344 168.949219 222.160156 168.25 C 221.375 167.507812 220.589844 167.675781 219.742188 167.667969 C 219.28125 167.664062 218.890625 167.617188 218.863281 168.285156 C 218.835938 169.042969 219.3125 168.933594 219.777344 168.933594 C 221.71875 168.929688 223.660156 168.929688 225.605469 168.929688 C 230.472656 168.929688 235.34375 168.929688 240.214844 168.933594 C 240.640625 168.933594 241.019531 168.960938 241.035156 168.351562 C 241.054688 167.742188 240.738281 167.664062 240.226562 167.660156 C 239.582031 167.652344 238.9375 167.570312 238.300781 167.46875 C 235.84375 167.074219 234.480469 165.761719 234.066406 163.363281 C 233.960938 162.761719 233.96875 162.136719 233.96875 161.519531 C 233.964844 157.914062 233.976562 154.304688 233.984375 150.699219 C 233.984375 149.390625 233.984375 148.078125 233.984375 146.769531 M 60.277344 145.203125 C 61.558594 142.929688 62.761719 140.820312 63.917969 138.683594 C 64.015625 138.503906 63.871094 138.113281 63.730469 137.886719 C 61.890625 134.929688 59.996094 132.003906 58.195312 129.027344 C 57.082031 127.1875 56.003906 125.316406 55.105469 123.367188 C 54.527344 122.117188 55.164062 120.542969 56.433594 120 C 57.652344 119.476562 59.011719 119.265625 60.320312 118.964844 C 60.699219 118.875 61.152344 119.019531 61.148438 118.386719 C 61.140625 117.800781 60.800781 117.789062 60.347656 117.789062 C 55.347656 117.792969 50.351562 117.777344 45.355469 117.777344 C 43.472656 117.773438 41.589844 117.769531 39.710938 117.824219 C 39.453125 117.828125 39.050781 118.109375 38.984375 118.335938 C 38.824219 118.90625 39.273438 118.949219 39.714844 118.96875 C 40.046875 118.980469 40.382812 119.054688 40.710938 119.128906 C 42.628906 119.542969 43.875 120.859375 44.925781 122.378906 C 47.164062 125.628906 49.382812 128.894531 51.582031 132.171875 C 54.453125 136.441406 57.292969 140.730469 60.277344 145.203125 M 115.0625 164.503906 C 114.992188 165.945312 114.933594 167.265625 114.855469 168.585938 C 114.824219 169.089844 114.964844 169.402344 115.527344 169.46875 C 117.085938 169.644531 118.648438 170.042969 120.195312 169.992188 C 122.613281 169.917969 125.0625 169.738281 127.429688 169.261719 C 131.335938 168.472656 134.6875 166.585938 137.226562 163.421875 C 140.039062 159.921875 141.066406 155.816406 141.097656 151.445312 C 141.15625 142.90625 141.113281 134.363281 141.121094 125.824219 C 141.121094 125.085938 141.164062 124.339844 141.269531 123.613281 C 141.546875 121.746094 142.257812 120.121094 144.25 119.554688 C 145.363281 119.234375 146.539062 119.121094 147.691406 118.964844 C 148.113281 118.910156 148.492188 118.964844 148.472656 118.347656 C 148.453125 117.808594 148.152344 117.792969 147.734375 117.792969 C 143.972656 117.792969 140.210938 117.769531 136.453125 117.765625 C 134.753906 117.765625 133.058594 117.761719 131.367188 117.820312 C 131.121094 117.828125 130.890625 118.195312 130.648438 118.390625 C 130.871094 118.578125 131.0625 118.828125 131.316406 118.925781 C 131.558594 119.019531 131.867188 118.921875 132.140625 118.964844 C 133.96875 119.257812 135.878906 119.445312 136.910156 121.308594 C 137.726562 122.78125 137.800781 124.429688 137.800781 126.070312 C 137.800781 134.425781 137.839844 142.78125 137.769531 151.136719 C 137.753906 152.808594 137.492188 154.519531 137.058594 156.136719 C 134.683594 164.992188 126.277344 168.957031 117.550781 165.71875 C 116.730469 165.414062 115.964844 164.949219 115.0625 164.503906 M 226.261719 151.632812 C 226.433594 151.566406 226.519531 151.5625 226.535156 151.523438 C 227.785156 148.480469 229.054688 145.445312 230.253906 142.382812 C 230.394531 142.023438 230.304688 141.4375 230.09375 141.09375 C 227.570312 137.007812 224.972656 132.960938 222.460938 128.863281 C 221.386719 127.113281 220.34375 125.324219 219.507812 123.453125 C 218.855469 122 219.546875 120.441406 221.019531 119.847656 C 222.171875 119.390625 223.441406 119.21875 224.667969 118.964844 C 225.058594 118.886719 225.492188 119.015625 225.492188 118.382812 C 225.492188 117.785156 225.132812 117.792969 224.691406 117.792969 C 217.785156 117.796875 210.878906 117.789062 203.976562 117.8125 C 203.75 117.8125 203.402344 118.09375 203.332031 118.3125 C 203.183594 118.78125 203.496094 118.933594 203.949219 118.960938 C 205.847656 119.066406 207.367188 119.910156 208.519531 121.40625 C 209.21875 122.308594 209.933594 123.199219 210.570312 124.144531 C 215.699219 131.796875 220.816406 139.457031 225.914062 147.128906 C 226.136719 147.460938 226.230469 147.925781 226.246094 148.335938 C 226.292969 149.417969 226.261719 150.503906 226.261719 151.632812 M 54.613281 168.855469 C 54.765625 168.886719 54.851562 168.925781 54.941406 168.925781 C 61.972656 168.929688 69 168.929688 76.03125 168.941406 C 76.5 168.941406 76.714844 168.800781 76.703125 168.3125 C 76.695312 167.839844 76.503906 167.714844 76.035156 167.664062 C 74.878906 167.53125 73.703125 167.414062 72.59375 167.089844 C 70.714844 166.539062 69.628906 164.691406 69.621094 162.246094 C 69.609375 157.34375 69.605469 152.4375 69.636719 147.535156 C 69.640625 146.992188 69.804688 146.375 70.089844 145.914062 C 74.402344 138.980469 78.753906 132.074219 83.074219 125.148438 C 85.136719 121.84375 87.53125 119.054688 91.847656 118.9375 C 92.015625 118.929688 92.320312 118.578125 92.300781 118.425781 C 92.265625 118.195312 92.035156 117.875 91.824219 117.8125 C 91.484375 117.714844 91.09375 117.804688 90.722656 117.804688 C 85.574219 117.804688 80.425781 117.800781 75.277344 117.800781 C 74.613281 117.800781 74.242188 118.203125 74.542969 118.648438 C 74.683594 118.851562 75.109375 118.925781 75.410156 118.9375 C 77.761719 119.046875 79.359375 120.117188 79.773438 121.960938 C 80.054688 123.195312 79.738281 124.339844 79.082031 125.402344 C 78.019531 127.136719 76.929688 128.855469 75.886719 130.597656 C 75.1875 131.765625 74.222656 132.828125 74.433594 134.375 C 74.484375 134.722656 74.21875 135.140625 74.03125 135.488281 C 73.464844 136.546875 72.871094 137.59375 72.28125 138.636719 C 68.960938 144.507812 65.628906 150.371094 62.339844 156.257812 C 62.042969 156.792969 61.925781 157.472656 61.886719 158.097656 C 61.796875 159.632812 61.886719 161.183594 61.738281 162.710938 C 61.554688 164.59375 60.925781 166.332031 58.929688 167.007812 C 57.839844 167.378906 56.660156 167.589844 55.507812 167.648438 C 54.582031 167.691406 54.355469 167.976562 54.613281 168.855469 M 107.730469 165.753906 C 107.863281 160.886719 108.027344 156.183594 108.109375 151.476562 C 108.183594 147.222656 108.164062 142.96875 108.203125 138.714844 C 108.222656 136.929688 108.253906 135.140625 108.34375 133.359375 C 108.484375 130.671875 108.6875 127.984375 108.855469 125.296875 C 108.882812 124.863281 108.839844 124.429688 108.890625 124 C 109.132812 121.890625 109.847656 120.074219 112.144531 119.464844 C 113.121094 119.203125 114.140625 119.09375 115.144531 118.960938 C 115.558594 118.910156 115.960938 118.980469 115.9375 118.355469 C 115.914062 117.742188 115.519531 117.796875 115.101562 117.796875 C 110.109375 117.789062 105.113281 117.769531 100.117188 117.765625 C 98.207031 117.761719 96.292969 117.769531 94.382812 117.820312 C 94.164062 117.828125 93.957031 118.164062 93.746094 118.347656 C 93.949219 118.542969 94.117188 118.824219 94.359375 118.914062 C 94.632812 119.019531 94.972656 118.914062 95.273438 118.960938 C 97.097656 119.246094 99 119.398438 100.117188 121.199219 C 100.960938 122.5625 101.082031 124.109375 101.082031 125.652344 C 101.101562 133.886719 101.039062 142.121094 101.128906 150.351562 C 101.152344 152.488281 101.453125 154.652344 101.921875 156.738281 C 102.734375 160.359375 104.75 163.300781 107.730469 165.753906 M 158.179688 143.320312 C 158.179688 148.75 158.1875 154.179688 158.171875 159.609375 C 158.167969 160.746094 158.160156 161.894531 158.011719 163.019531 C 157.777344 164.808594 157.105469 166.421875 155.234375 167.042969 C 154.144531 167.40625 152.960938 167.507812 151.8125 167.664062 C 151.375 167.722656 151.027344 167.714844 151.003906 168.289062 C 150.984375 168.863281 151.292969 168.9375 151.757812 168.9375 C 155.859375 168.925781 159.964844 168.925781 164.066406 168.941406 C 164.527344 168.941406 164.730469 168.8125 164.746094 168.320312 C 164.859375 164.964844 165 161.613281 165.128906 158.257812 C 165.253906 154.9375 165.382812 151.617188 165.5 148.296875 C 165.625 144.632812 165.792969 140.96875 165.84375 137.304688 C 165.910156 132.246094 165.890625 127.1875 165.886719 122.128906 C 165.886719 121.542969 166.03125 121.25 166.679688 121.148438 C 168.199219 120.917969 169.699219 120.539062 171.21875 120.3125 C 174.601562 119.804688 177.925781 120.023438 181.082031 121.453125 C 185.511719 123.460938 188.636719 126.832031 190.789062 131.109375 C 192.738281 134.984375 193.40625 139.132812 193.367188 143.464844 C 193.3125 149.304688 192 154.726562 188.402344 159.398438 C 185.015625 163.785156 180.628906 166.441406 174.894531 166.402344 C 174.15625 166.398438 173.40625 166.347656 172.679688 166.445312 C 172.394531 166.484375 172.09375 166.84375 171.921875 167.128906 C 171.796875 167.339844 171.890625 167.671875 171.855469 167.945312 C 171.761719 168.683594 172.019531 168.988281 172.820312 168.945312 C 174.664062 168.84375 176.523438 168.949219 178.351562 168.746094 C 180.515625 168.507812 182.703125 168.199219 184.792969 167.613281 C 188.21875 166.648438 191.46875 165.257812 193.878906 162.441406 C 195.175781 160.925781 196.664062 159.542969 197.773438 157.898438 C 201.136719 152.917969 202.253906 147.308594 202.015625 141.375 C 201.839844 136.960938 200.777344 132.789062 198.421875 129.015625 C 196.496094 125.933594 194.203125 123.164062 191.027344 121.292969 C 188.558594 119.839844 185.824219 119.070312 183.03125 118.523438 C 179.539062 117.84375 176.011719 117.65625 172.460938 117.675781 C 165.644531 117.710938 158.824219 117.6875 152.007812 117.695312 C 151.617188 117.695312 151.066406 117.5 151.019531 118.191406 C 150.972656 118.894531 151.550781 118.835938 151.984375 118.894531 C 152.410156 118.949219 152.859375 118.886719 153.273438 118.976562 C 155.101562 119.378906 157.015625 119.765625 157.570312 121.925781 C 157.90625 123.222656 158.140625 124.585938 158.152344 125.921875 C 158.214844 131.722656 158.179688 137.519531 158.179688 143.320312 "/>
+    <path class="wm-path" fill="#3D5E54" d="M 158.179688 143.320312 C 158.179688 137.519531 158.214844 131.722656 158.152344 125.921875 C 158.140625 124.585938 157.90625 123.222656 157.570312 121.925781 C 157.015625 119.765625 155.101562 119.378906 153.273438 118.976562 C 152.859375 118.886719 152.410156 118.949219 151.984375 118.894531 C 151.550781 118.835938 150.972656 118.898438 151.019531 118.1875 C 151.066406 117.5 151.617188 117.695312 152.007812 117.695312 C 158.824219 117.6875 165.644531 117.710938 172.460938 117.675781 C 176.011719 117.65625 179.539062 117.84375 183.027344 118.523438 C 185.824219 119.070312 188.558594 119.839844 191.027344 121.292969 C 194.203125 123.164062 196.496094 125.933594 198.421875 129.015625 C 200.78125 132.789062 201.839844 136.960938 202.015625 141.375 C 202.253906 147.308594 201.136719 152.917969 197.773438 157.898438 C 196.664062 159.542969 195.175781 160.925781 193.875 162.441406 C 191.46875 165.257812 188.21875 166.648438 184.792969 167.613281 C 182.703125 168.199219 180.515625 168.507812 178.351562 168.746094 C 176.523438 168.949219 174.664062 168.84375 172.820312 168.945312 C 172.019531 168.988281 171.765625 168.6875 171.855469 167.945312 C 171.890625 167.671875 171.796875 167.335938 171.921875 167.128906 C 172.09375 166.84375 172.394531 166.484375 172.679688 166.445312 C 173.40625 166.347656 174.15625 166.398438 174.894531 166.402344 C 180.628906 166.441406 185.015625 163.785156 188.402344 159.394531 C 192 154.726562 193.3125 149.304688 193.367188 143.464844 C 193.40625 139.132812 192.738281 134.984375 190.789062 131.109375 C 188.636719 126.832031 185.511719 123.460938 181.082031 121.453125 C 177.925781 120.023438 174.605469 119.804688 171.21875 120.3125 C 169.699219 120.539062 168.199219 120.917969 166.679688 121.148438 C 166.03125 121.25 165.886719 121.542969 165.886719 122.128906 C 165.890625 127.1875 165.910156 132.246094 165.84375 137.304688 C 165.792969 140.96875 165.625 144.632812 165.5 148.296875 C 165.382812 151.617188 165.253906 154.9375 165.128906 158.257812 C 165 161.613281 164.859375 164.964844 164.746094 168.320312 C 164.726562 168.8125 164.527344 168.941406 164.066406 168.9375 C 159.964844 168.925781 155.863281 168.929688 151.757812 168.9375 C 151.289062 168.9375 150.984375 168.863281 151.007812 168.289062 C 151.027344 167.714844 151.375 167.722656 151.8125 167.664062 C 152.960938 167.507812 154.144531 167.40625 155.234375 167.042969 C 157.105469 166.421875 157.777344 164.808594 158.011719 163.019531 C 158.160156 161.894531 158.167969 160.746094 158.171875 159.609375 C 158.1875 154.179688 158.179688 148.75 158.179688 143.320312 "/>
+    <path class="wm-path" fill="#3D5E54" d="M 107.730469 165.753906 C 104.75 163.296875 102.734375 160.359375 101.921875 156.738281 C 101.453125 154.652344 101.152344 152.488281 101.128906 150.351562 C 101.039062 142.121094 101.101562 133.886719 101.085938 125.652344 C 101.082031 124.109375 100.960938 122.5625 100.117188 121.199219 C 99 119.398438 97.101562 119.246094 95.273438 118.960938 C 94.972656 118.914062 94.632812 119.019531 94.359375 118.914062 C 94.117188 118.824219 93.945312 118.546875 93.746094 118.347656 C 93.957031 118.164062 94.167969 117.828125 94.382812 117.820312 C 96.292969 117.769531 98.207031 117.761719 100.117188 117.765625 C 105.113281 117.769531 110.109375 117.789062 115.101562 117.792969 C 115.519531 117.796875 115.914062 117.742188 115.9375 118.355469 C 115.960938 118.980469 115.558594 118.910156 115.144531 118.964844 C 114.140625 119.09375 113.121094 119.203125 112.144531 119.464844 C 109.847656 120.074219 109.132812 121.890625 108.890625 124 C 108.839844 124.429688 108.882812 124.863281 108.855469 125.292969 C 108.6875 127.984375 108.484375 130.671875 108.34375 133.359375 C 108.253906 135.144531 108.222656 136.929688 108.203125 138.714844 C 108.164062 142.96875 108.183594 147.222656 108.109375 151.476562 C 108.027344 156.183594 107.863281 160.886719 107.730469 165.753906 "/>
+    <path class="wm-path" fill="#3D5E54" d="M 54.613281 168.851562 C 54.355469 167.976562 54.578125 167.691406 55.507812 167.648438 C 56.660156 167.59375 57.839844 167.378906 58.929688 167.007812 C 60.925781 166.332031 61.554688 164.59375 61.738281 162.710938 C 61.886719 161.183594 61.796875 159.632812 61.886719 158.097656 C 61.925781 157.472656 62.042969 156.789062 62.339844 156.257812 C 65.628906 150.371094 68.960938 144.507812 72.28125 138.636719 C 72.871094 137.589844 73.464844 136.546875 74.035156 135.488281 C 74.21875 135.140625 74.484375 134.722656 74.433594 134.375 C 74.222656 132.828125 75.1875 131.765625 75.886719 130.601562 C 76.929688 128.855469 78.019531 127.136719 79.085938 125.402344 C 79.738281 124.339844 80.054688 123.195312 79.773438 121.957031 C 79.359375 120.117188 77.761719 119.046875 75.414062 118.941406 C 75.109375 118.925781 74.683594 118.851562 74.542969 118.648438 C 74.242188 118.203125 74.613281 117.804688 75.277344 117.804688 C 80.425781 117.804688 85.574219 117.804688 90.722656 117.804688 C 91.09375 117.804688 91.484375 117.714844 91.824219 117.816406 C 92.035156 117.875 92.265625 118.195312 92.300781 118.425781 C 92.320312 118.578125 92.015625 118.929688 91.847656 118.933594 C 87.53125 119.054688 85.136719 121.84375 83.074219 125.148438 C 78.753906 132.074219 74.402344 138.980469 70.09375 145.914062 C 69.804688 146.375 69.640625 146.992188 69.636719 147.535156 C 69.605469 152.4375 69.609375 157.339844 69.621094 162.242188 C 69.628906 164.691406 70.710938 166.539062 72.59375 167.089844 C 73.703125 167.414062 74.878906 167.53125 76.035156 167.660156 C 76.503906 167.714844 76.695312 167.839844 76.703125 168.3125 C 76.714844 168.800781 76.5 168.941406 76.03125 168.941406 C 69 168.929688 61.96875 168.929688 54.941406 168.925781 C 54.851562 168.925781 54.765625 168.886719 54.613281 168.851562 "/>
+    <path class="wm-path" fill="#3D5E54" d="M 226.261719 151.632812 C 226.261719 150.503906 226.292969 149.417969 226.246094 148.335938 C 226.230469 147.925781 226.136719 147.460938 225.914062 147.128906 C 220.816406 139.457031 215.699219 131.796875 210.570312 124.144531 C 209.933594 123.199219 209.21875 122.308594 208.519531 121.40625 C 207.367188 119.910156 205.847656 119.066406 203.953125 118.960938 C 203.496094 118.933594 203.183594 118.78125 203.332031 118.3125 C 203.402344 118.09375 203.75 117.8125 203.976562 117.8125 C 210.878906 117.789062 217.785156 117.796875 224.691406 117.792969 C 225.132812 117.792969 225.492188 117.785156 225.492188 118.382812 C 225.496094 119.015625 225.058594 118.886719 224.671875 118.964844 C 223.441406 119.21875 222.171875 119.390625 221.019531 119.847656 C 219.546875 120.441406 218.855469 122 219.507812 123.453125 C 220.34375 125.324219 221.386719 127.113281 222.460938 128.863281 C 224.972656 132.960938 227.570312 137.007812 230.09375 141.09375 C 230.304688 141.4375 230.394531 142.023438 230.253906 142.382812 C 229.054688 145.445312 227.789062 148.480469 226.535156 151.523438 C 226.519531 151.5625 226.433594 151.566406 226.261719 151.632812 "/>
+    <path class="wm-path" fill="#3D5E54" d="M 115.0625 164.503906 C 115.96875 164.949219 116.726562 165.414062 117.546875 165.71875 C 126.277344 168.957031 134.683594 164.992188 137.058594 156.136719 C 137.492188 154.519531 137.753906 152.808594 137.769531 151.136719 C 137.839844 142.78125 137.800781 134.425781 137.800781 126.070312 C 137.800781 124.429688 137.726562 122.78125 136.910156 121.308594 C 135.878906 119.445312 133.96875 119.257812 132.140625 118.964844 C 131.867188 118.921875 131.558594 119.019531 131.316406 118.925781 C 131.0625 118.828125 130.871094 118.578125 130.652344 118.390625 C 130.886719 118.191406 131.121094 117.828125 131.367188 117.820312 C 133.058594 117.761719 134.757812 117.761719 136.453125 117.765625 C 140.214844 117.773438 143.972656 117.792969 147.734375 117.792969 C 148.152344 117.792969 148.453125 117.808594 148.472656 118.347656 C 148.492188 118.964844 148.113281 118.910156 147.691406 118.964844 C 146.539062 119.121094 145.363281 119.234375 144.25 119.554688 C 142.257812 120.121094 141.546875 121.746094 141.269531 123.613281 C 141.164062 124.339844 141.121094 125.085938 141.121094 125.824219 C 141.109375 134.363281 141.15625 142.90625 141.097656 151.445312 C 141.066406 155.816406 140.039062 159.921875 137.226562 163.421875 C 134.6875 166.585938 131.335938 168.472656 127.429688 169.261719 C 125.0625 169.738281 122.613281 169.917969 120.195312 169.992188 C 118.644531 170.042969 117.085938 169.644531 115.527344 169.46875 C 114.964844 169.402344 114.824219 169.089844 114.855469 168.582031 C 114.933594 167.265625 114.988281 165.945312 115.0625 164.503906 "/>
+    <path class="wm-path" fill="#3D5E54" d="M 60.277344 145.203125 C 57.292969 140.730469 54.453125 136.441406 51.582031 132.171875 C 49.382812 128.894531 47.164062 125.628906 44.925781 122.378906 C 43.875 120.859375 42.628906 119.542969 40.710938 119.128906 C 40.382812 119.054688 40.046875 118.980469 39.714844 118.96875 C 39.273438 118.949219 38.824219 118.90625 38.984375 118.335938 C 39.050781 118.105469 39.453125 117.828125 39.710938 117.820312 C 41.589844 117.769531 43.472656 117.773438 45.355469 117.777344 C 50.351562 117.777344 55.347656 117.792969 60.347656 117.789062 C 60.800781 117.789062 61.140625 117.800781 61.148438 118.386719 C 61.152344 119.019531 60.699219 118.875 60.320312 118.964844 C 59.011719 119.265625 57.652344 119.476562 56.433594 120 C 55.164062 120.542969 54.527344 122.117188 55.105469 123.367188 C 56.003906 125.316406 57.082031 127.1875 58.195312 129.027344 C 59.996094 132.003906 61.890625 134.929688 63.730469 137.886719 C 63.871094 138.113281 64.015625 138.503906 63.917969 138.683594 C 62.761719 140.820312 61.558594 142.929688 60.277344 145.203125 "/>
+    <path class="wm-path" fill="#3D5E54" d="M 233.984375 146.769531 C 233.984375 148.078125 233.984375 149.390625 233.984375 150.699219 C 233.976562 154.308594 233.964844 157.914062 233.96875 161.519531 C 233.96875 162.136719 233.960938 162.761719 234.066406 163.363281 C 234.480469 165.761719 235.84375 167.074219 238.300781 167.46875 C 238.9375 167.570312 239.582031 167.652344 240.226562 167.660156 C 240.738281 167.664062 241.054688 167.742188 241.035156 168.351562 C 241.019531 168.960938 240.640625 168.933594 240.214844 168.933594 C 235.34375 168.929688 230.472656 168.929688 225.605469 168.929688 C 223.660156 168.929688 221.71875 168.929688 219.777344 168.933594 C 219.3125 168.933594 218.835938 169.042969 218.863281 168.285156 C 218.890625 167.617188 219.28125 167.664062 219.742188 167.667969 C 220.589844 167.679688 221.375 167.507812 222.160156 168.25 C 222.902344 168.945312 224.820312 168.359375 225.378906 167.039062 C 227.058594 163.070312 228.695312 159.082031 230.339844 155.097656 C 231.492188 152.320312 232.628906 149.53125 233.769531 146.746094 C 233.84375 146.753906 233.914062 146.761719 233.984375 146.769531 "/>
+    <path class="wm-path" fill="#3D5E54" d="M 234.027344 146.175781 C 234.3125 145.453125 234.589844 144.722656 234.886719 144.003906 C 235.90625 141.53125 236.9375 139.0625 237.941406 136.582031 C 238.074219 136.253906 238.164062 135.847656 238.097656 135.507812 C 237.890625 134.4375 238.355469 133.617188 238.894531 132.765625 C 240.410156 130.371094 241.882812 127.953125 243.367188 125.539062 C 244.054688 124.429688 244.429688 123.242188 244.128906 121.929688 C 243.734375 120.214844 242.203125 119.117188 240.019531 118.960938 C 239.804688 118.945312 239.550781 119.019531 239.382812 118.929688 C 239.160156 118.8125 239 118.574219 238.8125 118.390625 C 239.015625 118.191406 239.210938 117.832031 239.421875 117.820312 C 240.652344 117.757812 241.886719 117.769531 243.117188 117.769531 C 247.371094 117.777344 251.628906 117.792969 255.878906 117.792969 C 256.34375 117.792969 256.757812 117.875 256.640625 118.410156 C 256.59375 118.636719 256.183594 118.914062 255.914062 118.941406 C 253.132812 119.214844 250.769531 120.308594 249.214844 122.675781 C 246.289062 127.125 243.449219 131.628906 240.59375 136.121094 C 238.527344 139.371094 236.492188 142.640625 234.445312 145.898438 C 234.367188 146.019531 234.269531 146.132812 234.179688 146.25 C 234.128906 146.226562 234.078125 146.203125 234.027344 146.175781 "/>
+  </g>
+          <!-- invisible hit area for easier dragging -->
+        </g>
+
+        <!-- Taiwan group -->
+        <g id="twGroup" class="" transform="translate(418,134) scale(1.26)">
+          <g transform="translate(-85.17,-85.16)">
+    <path class="tw-silhouette" fill="#B59565" d="M 323.070312 110.414062 C 323.003906 109.691406 323.136719 108.894531 322.835938 108.328125 C 322.296875 107.320312 322.160156 106.277344 322.03125 105.195312 C 321.855469 103.6875 321.957031 102.238281 322.792969 100.90625 C 323.238281 100.199219 323.699219 99.519531 324.242188 98.875 C 324.628906 98.410156 324.929688 98.042969 325.546875 98.039062 C 325.898438 98.035156 326.183594 97.925781 326.152344 97.511719 C 326.117188 97.082031 325.792969 97.160156 325.5 97.1875 C 325.105469 97.222656 324.726562 97.179688 324.628906 96.707031 C 324.523438 96.1875 324.429688 95.664062 324.375 95.140625 C 324.335938 94.761719 324.183594 94.636719 323.8125 94.691406 C 323.578125 94.726562 323.332031 94.703125 323.089844 94.695312 C 322.84375 94.683594 322.59375 94.683594 322.359375 94.625 C 321.582031 94.429688 320.808594 94.210938 320.035156 93.992188 C 319.996094 93.980469 319.988281 93.878906 319.949219 93.835938 C 319.480469 93.332031 319.085938 92.695312 318.515625 92.367188 C 317.875 92.003906 317.460938 91.550781 317.15625 90.925781 C 316.785156 90.164062 316.273438 90 315.429688 90.167969 C 313.71875 90.503906 313.261719 92.261719 312.003906 93.105469 C 311.867188 93.195312 311.835938 93.433594 311.726562 93.578125 C 311.628906 93.703125 311.503906 93.847656 311.363281 93.890625 C 310.398438 94.183594 309.445312 94.597656 308.460938 94.699219 C 306.378906 94.921875 304.746094 96.070312 303.039062 97.078125 C 302.8125 97.214844 302.621094 97.578125 302.605469 97.847656 C 302.570312 98.34375 302.402344 98.707031 302.007812 99 C 301.902344 99.078125 301.816406 99.222656 301.78125 99.355469 C 301.53125 100.34375 300.351562 100.855469 300.425781 102.007812 C 300.429688 102.019531 300.394531 102.035156 300.390625 102.050781 C 300.265625 102.363281 300.117188 102.667969 300.027344 102.988281 C 299.804688 103.769531 299.753906 104.640625 298.832031 105.011719 C 298.75 105.046875 298.675781 105.148438 298.636719 105.238281 C 298.480469 105.578125 298.339844 105.921875 298.210938 106.230469 C 298.355469 106.414062 298.519531 106.617188 298.679688 106.820312 C 298.410156 106.910156 298.144531 107.042969 297.867188 107.085938 C 297.585938 107.132812 297.289062 107.074219 297.003906 107.089844 C 296.363281 107.125 296.144531 107.40625 296.042969 108.035156 C 296.011719 108.230469 295.710938 108.488281 295.5 108.53125 C 295.113281 108.613281 294.90625 108.769531 294.847656 109.148438 C 294.570312 110.871094 293.410156 112.148438 292.578125 113.589844 C 292.464844 113.789062 292.203125 113.90625 292.023438 114.074219 C 291.886719 114.195312 291.648438 114.359375 291.667969 114.472656 C 291.808594 115.414062 291 115.933594 290.714844 116.679688 C 290.511719 117.214844 290.199219 117.707031 289.972656 118.238281 C 289.835938 118.554688 289.695312 118.90625 289.699219 119.238281 C 289.703125 119.691406 289.570312 119.941406 289.183594 120.1875 C 288.855469 120.398438 288.503906 120.742188 288.390625 121.097656 C 288.140625 121.90625 287.945312 122.691406 287.183594 123.21875 C 286.9375 123.386719 286.847656 123.773438 286.65625 124.035156 C 286.433594 124.339844 286.226562 124.707031 285.917969 124.890625 C 285.472656 125.152344 285.1875 125.457031 285.085938 125.960938 C 285.023438 126.265625 284.957031 126.578125 284.816406 126.84375 C 284.292969 127.835938 283.753906 128.816406 283.191406 129.785156 C 283 130.121094 282.757812 130.441406 282.480469 130.703125 C 281.839844 131.304688 281.605469 132.222656 281.9375 133.027344 C 282.085938 133.386719 282.054688 133.621094 281.574219 133.636719 C 281.40625 133.644531 281.167969 133.742188 281.09375 133.871094 C 280.824219 134.363281 280.628906 134.894531 280.371094 135.394531 C 280.191406 135.738281 280.226562 135.988281 280.410156 136.351562 C 280.925781 137.371094 281.148438 138.449219 280.621094 139.539062 C 280.699219 139.867188 280.707031 140.195312 280.714844 140.523438 C 280.722656 140.769531 280.636719 141.085938 280.757812 141.242188 C 281.21875 141.824219 280.832031 142.136719 280.453125 142.472656 C 280.320312 142.589844 280.183594 142.699219 280.03125 142.824219 C 280.414062 143.324219 280.714844 143.691406 280.113281 144.28125 C 279.859375 144.53125 279.941406 145.226562 279.542969 145.597656 C 279.519531 145.625 279.554688 145.769531 279.605469 145.816406 C 279.917969 146.113281 279.78125 146.324219 279.535156 146.59375 C 279.378906 146.761719 279.285156 147.023438 279.253906 147.257812 C 279.171875 147.835938 279.148438 148.425781 279.085938 149.007812 C 279.074219 149.121094 279.019531 149.257812 278.9375 149.335938 C 278.558594 149.6875 278.683594 149.917969 279.082031 150.136719 C 279.4375 150.335938 279.625 150.578125 279.226562 150.957031 C 279.140625 151.035156 279.175781 151.359375 279.269531 151.476562 C 279.40625 151.640625 279.648438 151.71875 279.84375 151.832031 C 280.636719 152.289062 281.296875 152.851562 281.414062 153.84375 C 281.472656 154.371094 281.429688 154.945312 281.628906 155.414062 C 282.257812 156.882812 282.980469 158.3125 283.65625 159.761719 C 283.792969 160.058594 283.921875 160.371094 283.972656 160.6875 C 284.003906 160.855469 283.914062 161.105469 283.789062 161.230469 C 283.351562 161.660156 283.304688 162.066406 283.695312 162.527344 C 284.152344 163.070312 284.59375 163.632812 285.070312 164.15625 C 285.445312 164.5625 285.851562 164.941406 286.277344 165.296875 C 286.390625 165.394531 286.632812 165.425781 286.78125 165.375 C 287.277344 165.203125 287.605469 165.4375 287.820312 165.808594 C 288.054688 166.207031 288.222656 166.605469 288.796875 166.589844 C 288.921875 166.585938 289.117188 166.851562 289.160156 167.023438 C 289.273438 167.460938 289.542969 167.707031 289.957031 167.792969 C 290.925781 167.984375 291.4375 168.675781 291.890625 169.46875 C 292.070312 169.78125 292.300781 170.089844 292.582031 170.308594 C 292.953125 170.601562 293.117188 170.921875 293.1875 171.390625 C 293.246094 171.808594 293.5 172.203125 293.6875 172.601562 C 293.800781 172.839844 294.011719 173.039062 294.085938 173.285156 C 294.363281 174.203125 294.621094 175.132812 294.847656 176.0625 C 294.898438 176.261719 294.800781 176.503906 294.753906 176.71875 C 294.617188 177.351562 294.472656 177.980469 294.34375 178.613281 C 294.324219 178.707031 294.332031 178.863281 294.390625 178.90625 C 294.972656 179.332031 295.109375 179.949219 295.113281 180.660156 C 295.296875 180.503906 295.398438 180.363281 295.46875 180.203125 C 295.703125 179.675781 296.011719 179.601562 296.476562 179.960938 C 296.824219 180.230469 297.226562 180.433594 297.726562 180.742188 C 297.660156 180.421875 297.558594 180.214844 297.597656 180.042969 C 297.675781 179.6875 297.757812 179.296875 297.964844 179.019531 C 298.476562 178.34375 298.992188 177.628906 298.800781 176.777344 C 298.605469 175.917969 298.605469 175.105469 298.683594 174.242188 C 298.8125 172.851562 298.800781 171.445312 298.867188 170.050781 C 298.878906 169.769531 298.949219 169.480469 299.039062 169.214844 C 299.527344 167.773438 300.015625 166.335938 300.519531 164.902344 C 300.675781 164.460938 300.847656 164.027344 301.054688 163.605469 C 301.300781 163.101562 301.652344 162.644531 301.84375 162.121094 C 302.105469 161.414062 302.398438 160.792969 303.035156 160.308594 C 303.960938 159.601562 304.796875 158.773438 305.6875 158.019531 C 306.152344 157.625 306.34375 157.148438 306.3125 156.550781 C 306.285156 156.019531 306.539062 155.660156 306.941406 155.292969 C 307.429688 154.851562 307.777344 154.253906 308.191406 153.730469 C 308.355469 153.523438 308.546875 153.339844 308.710938 153.132812 C 308.933594 152.855469 309.21875 152.59375 309.34375 152.273438 C 309.660156 151.476562 309.863281 150.632812 310.179688 149.835938 C 310.296875 149.546875 310.574219 149.257812 310.851562 149.101562 C 311.601562 148.683594 311.6875 148.527344 311.480469 147.679688 C 311.402344 147.347656 311.265625 146.917969 311.402344 146.667969 C 311.726562 146.078125 311.796875 145.453125 311.953125 144.828125 C 312.050781 144.4375 312.453125 144.128906 312.695312 143.765625 C 312.847656 143.542969 313.089844 143.285156 313.066406 143.058594 C 313.003906 142.324219 313.378906 141.769531 313.621094 141.136719 C 313.933594 140.320312 314.070312 139.433594 314.273438 138.574219 C 314.285156 138.519531 314.226562 138.457031 314.226562 138.398438 C 314.226562 138.070312 314.214844 137.738281 314.253906 137.414062 C 314.296875 137.050781 314.417969 136.695312 314.46875 136.332031 C 314.65625 135.03125 314.839844 133.742188 315.394531 132.519531 C 315.601562 132.058594 315.570312 131.492188 315.652344 130.972656 C 315.695312 130.699219 315.738281 130.425781 315.808594 130.160156 C 315.949219 129.632812 316.195312 129.125 316.25 128.59375 C 316.359375 127.53125 316.515625 126.515625 317.226562 125.660156 C 317.605469 125.207031 317.570312 124.761719 317.253906 124.246094 C 317.0625 123.933594 316.996094 123.5 317.003906 123.121094 C 317.019531 122.109375 318.304688 121.484375 317.890625 120.324219 C 318.261719 119.8125 318.53125 119.15625 319.023438 118.824219 C 320.078125 118.113281 320.613281 117.199219 320.660156 115.953125 C 320.667969 115.816406 320.746094 115.679688 320.789062 115.546875 C 320.933594 115.121094 321.125 114.703125 321.203125 114.265625 C 321.367188 113.378906 321.546875 112.527344 322.320312 111.933594 C 322.445312 111.839844 322.542969 111.546875 322.488281 111.417969 C 322.21875 110.796875 322.398438 110.46875 323.070312 110.414062 "/>
+    <path class="tw-char" fill="#FFFFFF" d="M 306.035156 139 C 306.035156 139.578125 306.082031 140.160156 306.019531 140.726562 C 305.964844 141.265625 305.847656 141.8125 305.648438 142.3125 C 305.496094 142.679688 305.417969 142.976562 305.695312 143.273438 C 306.398438 144.03125 306.214844 144.964844 306.1875 145.855469 C 306.175781 146.097656 306.019531 146.390625 305.835938 146.550781 C 305.609375 146.753906 305.246094 146.988281 305.007812 146.933594 C 304.78125 146.878906 304.503906 146.480469 304.484375 146.214844 C 304.421875 145.421875 304.464844 144.621094 304.496094 143.824219 C 304.507812 143.414062 304.617188 143.007812 304.617188 142.597656 C 304.621094 141.425781 304.617188 140.25 304.566406 139.074219 C 304.542969 138.484375 304.457031 137.890625 304.324219 137.3125 C 304.132812 136.480469 303.34375 136.421875 302.738281 136.402344 C 301.53125 136.367188 300.316406 136.476562 299.113281 136.601562 C 298.582031 136.652344 298.269531 136.996094 298.269531 137.621094 C 298.269531 138.296875 298.179688 138.980469 298.074219 139.648438 C 298.007812 140.046875 297.785156 140.480469 297.328125 140.378906 C 297.128906 140.339844 296.929688 139.863281 296.898438 139.566406 C 296.808594 138.667969 296.804688 137.761719 296.765625 136.859375 C 296.722656 135.882812 297.078125 135.496094 298.0625 135.519531 C 298.632812 135.535156 299.15625 135.558594 299.433594 134.894531 C 299.558594 134.597656 299.855469 134.542969 300.171875 134.707031 C 300.351562 134.804688 300.554688 134.855469 300.753906 134.910156 C 301.191406 135.03125 301.589844 135.066406 301.859375 134.558594 C 302.230469 133.851562 302.265625 133.289062 301.894531 132.894531 C 301.433594 132.402344 300.730469 132.488281 300.402344 133.078125 C 299.925781 133.933594 299.664062 133.964844 299.007812 133.25 C 298.582031 132.78125 297.761719 132.796875 297.195312 133.296875 C 296.929688 133.527344 296.699219 133.792969 296.445312 134.035156 C 295.832031 134.636719 295.15625 134.636719 294.550781 134.027344 C 294.273438 133.75 293.984375 133.484375 293.734375 133.183594 C 293.4375 132.832031 293.160156 132.820312 292.769531 133.054688 C 292.542969 133.191406 292.144531 133.320312 291.972656 133.210938 C 291.574219 132.964844 291.875 132.609375 292.003906 132.289062 C 292.152344 131.933594 292.226562 131.546875 292.382812 131.195312 C 292.488281 130.957031 292.710938 130.554688 292.820312 130.578125 C 293.105469 130.628906 293.390625 130.835938 293.617188 131.042969 C 294.066406 131.449219 294.441406 131.945312 294.914062 132.316406 C 295.300781 132.617188 295.730469 132.582031 296.148438 132.214844 C 296.347656 132.035156 296.695312 131.980469 296.988281 131.945312 C 297.695312 131.863281 298.410156 131.820312 299.121094 131.769531 C 299.761719 131.726562 300.050781 131.332031 300.183594 130.753906 C 300.261719 130.398438 300.300781 129.996094 300.800781 129.953125 C 301.296875 129.910156 301.632812 130.121094 301.828125 130.574219 C 302.199219 131.4375 302.859375 131.765625 303.785156 131.765625 C 304.871094 131.769531 305.964844 131.832031 307.042969 131.945312 C 307.6875 132.007812 307.804688 132.394531 307.359375 132.863281 C 306.980469 133.261719 306.535156 133.523438 305.925781 133.285156 C 305.46875 133.109375 304.992188 132.964844 304.507812 132.886719 C 304.277344 132.847656 303.972656 132.933594 303.773438 133.070312 C 303.273438 133.410156 303.03125 134.277344 303.269531 134.847656 C 303.339844 135.015625 303.585938 135.125 303.773438 135.214844 C 303.871094 135.257812 304.015625 135.1875 304.136719 135.179688 C 305.402344 135.078125 305.882812 135.511719 305.917969 136.777344 C 305.929688 137.148438 305.957031 137.515625 305.960938 137.886719 C 305.96875 138.257812 305.964844 138.628906 305.964844 139 C 305.988281 139 306.011719 139 306.035156 139 "/>
+    <path class="tw-char" fill="#FFFFFF" d="M 289.917969 136.113281 C 289.421875 136.3125 289.011719 136.496094 288.585938 136.636719 C 287.933594 136.847656 286.707031 135.929688 286.828125 135.257812 C 286.878906 134.988281 287.3125 134.601562 287.578125 134.59375 C 288.777344 134.566406 289.832031 134.242188 290.796875 133.519531 C 291.140625 133.265625 291.4375 133.492188 291.410156 133.941406 C 291.394531 134.140625 291.3125 134.339844 291.234375 134.527344 C 290.859375 135.402344 290.976562 135.5625 291.949219 135.503906 C 292.75 135.457031 293.554688 135.402344 294.355469 135.402344 C 294.738281 135.40625 295.128906 135.5 295.496094 135.621094 C 295.9375 135.765625 295.933594 136.058594 295.648438 136.378906 C 295.296875 136.777344 294.835938 136.804688 294.347656 136.800781 C 293.785156 136.796875 293.457031 137.179688 293.632812 137.667969 C 293.707031 137.875 293.992188 138.09375 294.214844 138.136719 C 294.695312 138.234375 295.207031 138.171875 295.6875 138.269531 C 295.902344 138.3125 296.128906 138.554688 296.234375 138.765625 C 296.273438 138.847656 296.03125 139.1875 295.863281 139.242188 C 295.425781 139.378906 294.960938 139.484375 294.507812 139.488281 C 293.757812 139.496094 293.5625 139.632812 293.609375 140.367188 C 293.660156 141.25 293.742188 142.128906 293.796875 143.011719 C 293.824219 143.472656 294.035156 143.671875 294.503906 143.660156 C 294.90625 143.644531 295.445312 143.566406 295.503906 144.117188 C 295.558594 144.640625 295.03125 144.691406 294.636719 144.8125 C 293.089844 145.285156 291.546875 145.785156 289.992188 146.238281 C 289.714844 146.320312 289.238281 146.332031 289.113281 146.175781 C 288.960938 145.984375 289.003906 145.542969 289.109375 145.261719 C 289.394531 144.507812 289.898438 144.078125 290.808594 144.164062 C 291.839844 144.261719 292.230469 143.847656 292.25 142.804688 C 292.269531 142.042969 292.28125 141.285156 292.265625 140.523438 C 292.242188 139.503906 291.753906 139.207031 290.800781 139.625 C 290.5 139.753906 290.242188 140.003906 289.933594 140.085938 C 289.699219 140.148438 289.371094 140.09375 289.171875 139.964844 C 289.070312 139.898438 289.082031 139.511719 289.167969 139.328125 C 289.515625 138.601562 290.011719 138.070312 290.9375 138.234375 C 291.15625 138.273438 291.402344 138.277344 291.609375 138.214844 C 291.824219 138.148438 292.140625 138.003906 292.175781 137.847656 C 292.222656 137.605469 292.128906 137.273438 291.972656 137.078125 C 291.863281 136.945312 291.535156 136.933594 291.316406 136.960938 C 291.058594 136.992188 290.816406 137.167969 290.558594 137.207031 C 290.304688 137.238281 289.929688 137.265625 289.808594 137.125 C 289.683594 136.976562 289.796875 136.625 289.816406 136.363281 C 289.820312 136.289062 289.871094 136.222656 289.917969 136.113281 "/>
+    <path class="tw-char" fill="#FFFFFF" d="M 300.222656 117.070312 C 302.027344 117.007812 303.839844 116.988281 305.640625 116.867188 C 306.4375 116.8125 307.191406 116.222656 307.132812 115.367188 C 307.078125 114.621094 306.535156 113.992188 305.78125 113.988281 C 304.6875 113.980469 303.59375 113.964844 302.652344 114.667969 C 302.492188 114.785156 302.28125 114.882812 302.085938 114.894531 C 301.886719 114.910156 301.625 114.867188 301.496094 114.742188 C 301.402344 114.644531 301.417969 114.351562 301.492188 114.195312 C 302.046875 113.039062 302.890625 112.671875 304.5 113.023438 C 305.316406 113.199219 306.027344 113.027344 306.792969 112.828125 C 307.394531 112.671875 308.054688 112.71875 308.6875 112.699219 C 309.757812 112.667969 310.828125 112.65625 311.898438 112.636719 C 312 112.636719 312.101562 112.636719 312.207031 112.636719 C 312.617188 112.640625 313.140625 112.71875 313.078125 113.171875 C 313.039062 113.488281 312.574219 113.910156 312.234375 113.984375 C 311.710938 114.097656 311.136719 113.957031 310.582031 113.921875 C 310.316406 113.902344 310.046875 113.835938 309.785156 113.871094 C 308.980469 113.976562 308.683594 114.339844 308.6875 115.140625 C 308.695312 115.898438 309.039062 116.261719 309.84375 116.390625 C 310.300781 116.464844 310.777344 116.511719 311.207031 116.671875 C 311.429688 116.75 311.570312 117.046875 311.746094 117.246094 C 311.511719 117.421875 311.300781 117.671875 311.035156 117.757812 C 310.652344 117.878906 310.230469 117.894531 309.820312 117.929688 C 309.351562 117.972656 309.179688 118.25 309.183594 118.679688 C 309.183594 119.234375 309.242188 119.800781 309.164062 120.34375 C 309.121094 120.667969 308.867188 120.957031 308.707031 121.261719 C 308.433594 121.054688 308.03125 120.898438 307.914062 120.625 C 307.710938 120.144531 307.648438 119.597656 307.597656 119.070312 C 307.527344 118.347656 307.253906 117.996094 306.554688 117.953125 C 305.40625 117.886719 304.253906 117.855469 303.105469 117.808594 C 303.023438 117.804688 302.933594 117.804688 302.859375 117.832031 C 301.476562 118.390625 300.097656 118.960938 298.707031 119.5 C 298.429688 119.605469 298.105469 119.578125 297.804688 119.613281 C 297.785156 119.261719 297.636719 118.851562 297.769531 118.578125 C 298 118.105469 298.332031 117.613281 298.757812 117.335938 C 299.144531 117.082031 299.710938 117.097656 300.199219 116.996094 C 300.207031 117.019531 300.214844 117.046875 300.222656 117.070312 "/>
+    <path class="tw-char" fill="#FFFFFF" d="M 299.210938 143.214844 C 299.175781 142.621094 299.132812 142.027344 299.109375 141.433594 C 299.09375 140.980469 299.289062 140.734375 299.78125 140.648438 C 300.078125 140.597656 300.457031 140.386719 300.578125 140.140625 C 300.695312 139.902344 300.53125 139.523438 300.488281 139.207031 C 300.210938 139.261719 299.929688 139.300781 299.652344 139.371094 C 299.519531 139.40625 299.402344 139.523438 299.269531 139.5625 C 299.027344 139.625 298.777344 139.65625 298.535156 139.699219 C 298.496094 139.40625 298.355469 139.074219 298.445312 138.824219 C 298.542969 138.566406 298.824219 138.320312 299.082031 138.1875 C 299.277344 138.089844 299.570312 138.210938 299.8125 138.179688 C 300.214844 138.128906 300.472656 137.988281 300.441406 137.460938 C 300.425781 137.199219 300.707031 136.757812 300.9375 136.695312 C 301.160156 136.632812 301.699219 136.910156 301.734375 137.105469 C 301.910156 138.050781 302.445312 138.253906 303.308594 138.171875 C 303.671875 138.136719 304.261719 138.21875 304.214844 138.757812 C 304.171875 139.273438 303.675781 139.363281 303.203125 139.3125 C 303.039062 139.292969 302.875 139.273438 302.710938 139.273438 C 302.429688 139.273438 302.023438 139.078125 301.976562 139.566406 C 301.941406 139.957031 301.898438 140.355469 302.5 140.5 C 303.421875 140.726562 303.472656 140.859375 303.484375 141.847656 C 303.496094 142.667969 303.511719 143.496094 303.484375 144.316406 C 303.457031 145.0625 303.195312 145.214844 302.496094 144.941406 C 302.457031 144.925781 302.421875 144.914062 302.382812 144.898438 C 301.230469 144.429688 301.222656 144.394531 302.117188 143.542969 C 302.519531 143.160156 302.523438 142.140625 302.121094 141.714844 C 301.847656 141.425781 300.824219 141.398438 300.496094 141.671875 C 300.148438 141.964844 300.148438 143.269531 300.546875 143.609375 C 300.898438 143.910156 300.855469 144.148438 300.554688 144.421875 C 300.375 144.589844 300.203125 144.78125 299.996094 144.90625 C 299.820312 145.015625 299.507812 145.15625 299.417969 145.082031 C 299.261719 144.953125 299.179688 144.675781 299.15625 144.453125 C 299.117188 144.042969 299.144531 143.628906 299.144531 143.21875 C 299.167969 143.21875 299.1875 143.21875 299.210938 143.214844 "/>
+    <path class="tw-char" fill="#FFFFFF" d="M 310.644531 110.609375 C 309.726562 110.722656 308.8125 110.898438 307.890625 110.925781 C 306.933594 110.957031 305.96875 110.863281 305.015625 110.769531 C 304.859375 110.753906 304.617188 110.480469 304.613281 110.320312 C 304.609375 110.125 304.773438 109.832031 304.945312 109.753906 C 305.503906 109.496094 305.9375 109.214844 306.214844 108.59375 C 306.546875 107.847656 307.613281 107.808594 308.066406 108.519531 C 308.511719 109.226562 309.109375 109.460938 309.875 109.464844 C 311.007812 109.46875 312.140625 109.453125 313.273438 109.484375 C 313.929688 109.503906 314.597656 109.550781 315.230469 109.703125 C 315.5 109.769531 315.796875 110.109375 315.890625 110.390625 C 316.023438 110.800781 316.246094 111.285156 315.679688 111.65625 C 315.011719 112.089844 315.058594 112.171875 315.53125 112.804688 C 315.699219 113.027344 315.835938 113.492188 315.71875 113.652344 C 315.460938 114.003906 315.0625 114.410156 314.671875 114.472656 C 314.191406 114.542969 314.050781 113.996094 314.0625 113.574219 C 314.074219 113.1875 314.207031 112.804688 314.261719 112.417969 C 314.425781 111.289062 314.046875 110.855469 312.917969 110.800781 C 312.160156 110.765625 311.402344 110.675781 310.644531 110.609375 "/>
+    <path class="tw-char" fill="#FFFFFF" d="M 304.957031 123.152344 C 306.160156 123.328125 307.03125 122.851562 307.65625 121.828125 C 307.765625 121.648438 308.085938 121.425781 308.222656 121.472656 C 308.453125 121.554688 308.707031 121.800781 308.789062 122.03125 C 309.226562 123.300781 307.996094 125.101562 306.589844 125.148438 C 305.828125 125.175781 305.023438 125.03125 304.308594 124.773438 C 303.945312 124.640625 303.65625 124.121094 303.484375 123.710938 C 303.320312 123.324219 303.65625 123.121094 304.035156 123.109375 C 304.34375 123.101562 304.648438 123.136719 304.957031 123.152344 "/>
+    <path class="tw-char" fill="#FFFFFF" d="M 301.09375 110.066406 C 301.730469 109.945312 302.367188 109.792969 303.007812 109.726562 C 303.246094 109.699219 303.503906 109.871094 303.753906 109.953125 C 303.652344 110.199219 303.617188 110.582031 303.4375 110.664062 C 303.003906 110.867188 302.511719 110.988281 302.03125 111.039062 C 301.214844 111.128906 300.445312 111.753906 300.269531 112.570312 C 300.175781 113.011719 300.097656 113.457031 300 113.898438 C 299.976562 114.019531 299.957031 114.171875 299.875 114.242188 C 299.640625 114.445312 299.375 114.617188 299.125 114.800781 C 298.957031 114.519531 298.71875 114.253906 298.652344 113.949219 C 298.585938 113.644531 298.6875 113.300781 298.734375 112.976562 C 298.8125 112.429688 298.949219 111.886719 298.980469 111.339844 C 299.042969 110.257812 299.316406 109.960938 300.398438 109.960938 C 300.625 109.960938 300.851562 109.960938 301.078125 109.960938 C 301.082031 109.996094 301.089844 110.03125 301.09375 110.066406 "/>
+    <path class="tw-char" fill="#FFFFFF" d="M 298.242188 144.664062 C 298.222656 145.109375 298.09375 145.570312 297.578125 145.871094 C 297.320312 146.019531 297.109375 146.265625 296.910156 146.5 C 296.453125 147.039062 296.101562 147.160156 295.535156 146.757812 C 295.128906 146.476562 294.804688 146.054688 294.515625 145.644531 C 294.289062 145.328125 294.449219 145.054688 294.824219 144.941406 C 294.941406 144.910156 295.066406 144.902344 295.1875 144.886719 C 296.433594 144.742188 296.773438 144.386719 296.875 143.117188 C 296.886719 142.972656 296.851562 142.816406 296.898438 142.6875 C 296.988281 142.429688 297.121094 142.1875 297.238281 141.941406 C 297.5 142.167969 297.921875 142.355469 297.996094 142.632812 C 298.167969 143.253906 298.164062 143.925781 298.242188 144.664062 "/>
+    <path class="tw-char" fill="#FFFFFF" d="M 314.769531 116.550781 C 315.519531 116.664062 316.269531 116.75 317.011719 116.898438 C 317.617188 117.015625 317.726562 117.386719 317.34375 117.867188 C 316.632812 118.753906 315.835938 118.921875 314.824219 118.417969 C 314.425781 118.21875 313.992188 118.082031 313.585938 117.890625 C 313.351562 117.78125 313.09375 117.660156 312.925781 117.472656 C 312.578125 117.078125 312.753906 116.65625 313.285156 116.617188 C 313.773438 116.578125 314.269531 116.609375 314.761719 116.609375 C 314.765625 116.589844 314.769531 116.570312 314.769531 116.550781 "/>
+    <path class="tw-char" fill="#FFFFFF" d="M 291.671875 141.683594 C 291.679688 142.476562 290.644531 143.785156 289.875 143.910156 C 289.722656 143.933594 289.484375 143.871094 289.394531 143.761719 C 289.316406 143.660156 289.320312 143.386719 289.402344 143.277344 C 289.953125 142.554688 290.050781 141.761719 289.910156 140.886719 C 289.84375 140.46875 290.148438 140.238281 290.554688 140.328125 C 291.011719 140.429688 291.667969 141.226562 291.671875 141.683594 "/>
+    <path class="tw-char" fill="#FFFFFF" d="M 296.101562 142.296875 C 296.003906 142.449219 295.941406 142.679688 295.816406 142.71875 C 295.65625 142.769531 295.382812 142.726562 295.277344 142.613281 C 294.921875 142.246094 294.589844 141.847656 294.308594 141.421875 C 294.03125 140.996094 294.214844 140.273438 294.613281 139.964844 C 294.917969 139.730469 295.378906 139.839844 295.519531 140.25 C 295.746094 140.90625 295.902344 141.585938 296.101562 142.296875 "/>
+  </g>
+        </g>
+
+        <!-- Tagline -->
+        
+      </svg>
+  </div>
+  <div class="header-divider"></div>
+  <div class="header-text">
+    <h1>LME 鋁 分析</h1>
+    <div class="header-meta">
+      <div class="header-badge badge-ip"><span>智慧財產權</span>宇鏑有限公司</div>
+      <div class="header-badge badge-author"><span>撰寫人</span>Peter</div>
+      <div class="header-badge badge-date"><span>撰寫日期</span>2026-08-24</div>
+      <div class="header-badge badge-data"><span>資料截至</span>2026-10-02</div>
+      <div class="header-badge badge-legal"><span>法律顧問</span>略策股份有限公司</div>
     </div>
   </div>
-
-  <div class="stats">
-    <div class="stat-card">
-      <div class="stat-val" id="latestDate">—</div>
-      <div class="stat-lbl">最新資料日期</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val" id="latestPrice">—</div>
-      <div class="stat-lbl">最新現金價 USD/MT</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-val">每天</div>
-      <div class="stat-lbl">自動更新頻率</div>
-    </div>
   </div>
-
-  <a class="entry" href="dashboard.html">📊 開啟完整 Dashboard</a>
-  <div class="entry-sub">每日 07:30 更新 · 08:00 推送至 GitHub Pages</div>
-
-  <div class="footer">LME AL DAILY · Peter 專屬情報 · 每個工作日自動更新</div>
-
 </div>
+
+<div class="commentary-card">
+  <div class="commentary-header">
+    <div class="commentary-title">📝 市場評論</div>
+  </div>
+</div>
+
+
+
+<div class="kpi-section">
+  <div class="kpi-group-label">即時指標</div>
+  <div class="kpi-row" id="kpiRow1" style="grid-template-columns:repeat(4,1fr)"></div>
+  <div class="kpi-group-label" style="margin-top:20px">滬鋁 / 滬倫比</div>
+  <div class="kpi-row" id="kpiRowCN" style="grid-template-columns:repeat(4,1fr)"></div>
+  <div class="kpi-group-label" style="margin-top:20px">月均價</div>
+  <div class="kpi-row" id="kpiRow2" style="grid-template-columns:repeat(2,1fr)"></div>
+  <div class="kpi-group-label" style="margin-top:20px">MJP Premium 2026 · Major Japan Ports (USD/MT)</div>
+  <div class="kpi-row" id="kpiRowMJP" style="grid-template-columns:repeat(4,1fr)"></div>
+  <div class="kpi-group-label" style="margin-top:20px">區域 Premium · Regional Premium (USD/MT)</div>
+  <div class="kpi-row" id="kpiRowRegionalPremium" style="grid-template-columns:repeat(2,1fr)"></div>
+  <div class="kpi-group-label" style="margin-top:20px">鋁棒 Premium · Billet Premium (USD/MT)</div>
+  <div class="kpi-row" id="kpiRowBilletPremium" style="grid-template-columns:repeat(3,1fr)"></div>
+</div>
+
+<!-- ── 台指期夜盤 ── -->
+<div class="kpi-section">
+  <div class="kpi-group-label" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    台指期（TXF1）夜盤
+    <span id="txState" class="tx-badge tx-closed"></span>
+    <span id="txUpdated" style="font-size:10px;color:#94a3b8"></span>
+    <a href="https://www.cmoney.tw/forum/futures/TXF1?s=p" target="_blank" style="font-size:10px;color:#3D5E54;margin-left:auto;text-decoration:none">CMoney ↗</a>
+  </div>
+  <div class="kpi-row" style="grid-template-columns:repeat(2,1fr)">
+    <div class="kpi-card blue">
+      <div class="kpi-label">最新成交價</div>
+      <div class="kpi-value" id="txPrice" style="font-size:36px;letter-spacing:-1px">--</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">當日漲跌</div>
+      <div class="kpi-value" id="txChange" style="font-size:36px;letter-spacing:-1px">--</div>
+      <div class="kpi-change neutral" id="txPct"></div>
+    </div>
+  </div>
+</div>
+
+<div class="chart-container" style="position:relative">
+  <div class="chart-top">
+    <div class="chart-title">📈 價格 &amp; 庫存走勢</div>
+    <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#1e293b"></div>現金結算</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e11d48;height:4px;border-radius:2px"></div>3 個月期</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>3M−現金</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6366f1;height:8px;border-radius:1px"></div>庫存</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#B59565;border-top:2px dashed #B59565;height:0"></div>月均價</div>
+    </div>
+  </div>
+  <canvas id="chartCanvas"></canvas>
+  <div class="tooltip-box" id="tooltipBox">
+    <div class="tooltip-date" id="ttDate"></div>
+    <div class="tooltip-row"><span class="tooltip-label">現金結算</span><span class="tooltip-val tv-blue" id="ttCash"></span></div>
+    <div class="tooltip-row"><span class="tooltip-label">3 個月期</span><span class="tooltip-val" style="color:#e11d48;font-weight:700" id="ttFwd"></span></div>
+    <div class="tooltip-row"><span class="tooltip-label">3M − 現金</span><span class="tooltip-val" id="ttChange"></span></div>
+  </div>
+</div>
+
+<div class="chart-container" style="position:relative">
+  <div class="chart-top">
+    <div class="chart-title">📈 長江A00 / 鋁絞線 / 3M+MJP</div>
+    <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#B59565"></div>長江A00 (CNY，右軸)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#0d9488;height:4px;border-radius:2px"></div>鋁絞線 (USD，左軸)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e11d48;height:4px;border-radius:2px"></div>LME 3M + MJP (USD，左軸)</div>
+    </div>
+  </div>
+  <canvas id="chartCanvasCN"></canvas>
+  <div class="tooltip-box" id="tooltipBoxCN">
+    <div class="tooltip-date" id="ttDateCN"></div>
+    <div class="tooltip-row"><span class="tooltip-label">長江A00中價</span><span class="tooltip-val" id="ttCnAvg" style="color:#B59565"></span></div>
+    <div class="tooltip-row"><span class="tooltip-label">中國鋁絞線</span><span class="tooltip-val" id="ttWire" style="color:#0d9488;font-weight:700"></span></div>
+    <div class="tooltip-row"><span class="tooltip-label">LME 3M+MJP</span><span class="tooltip-val" id="ttMjp" style="color:#e11d48;font-weight:700"></span></div>
+  </div>
+</div>
+
+<div class="chart-container" style="position:relative">
+  <div class="chart-top">
+    <div class="chart-title">📊 價差：LME 3M+MJP − 中國鋁絞線 (USD/MT)</div>
+    <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#e11d48;height:8px"></div>LME 3M+MJP 高於鋁絞線</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#0d9488;height:8px"></div>低於鋁絞線</div>
+    </div>
+  </div>
+  <canvas id="chartCanvasSP"></canvas>
+  <div class="tooltip-box" id="tooltipBoxSP">
+    <div class="tooltip-date" id="ttDateSP"></div>
+    <div class="tooltip-row"><span class="tooltip-label">LME 3M+MJP</span><span class="tooltip-val" id="ttSpA"></span></div>
+    <div class="tooltip-row"><span class="tooltip-label">中國鋁絞線</span><span class="tooltip-val" id="ttSpB"></span></div>
+    <div class="tooltip-row"><span class="tooltip-label">價差</span><span class="tooltip-val" id="ttSpD" style="font-weight:700"></span></div>
+  </div>
+</div>
+
+<div class="table-container">
+  <div class="table-header-row">
+    <div class="table-title">📋 每日數據明細</div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>日期</th>
+        <th>現金結算 (USD/MT)</th>
+        <th>日變化</th>
+        <th>3 個月期 (USD/MT)</th>
+        <th>長江A00中價 (CNY/MT)</th>
+        <th>LME 庫存 (MT)</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<div class="table-container" id="wireCard">
+  <div class="table-header-row">
+    <div class="table-title">🔌 中國鋁絞線價格</div>
+    <div style="font-size:12px;color:#64748b">(長江A00中價 + 1600) ÷ 1.13 ÷ 當日 USD/CNY</div>
+  </div>
+  <div style="overflow-x:auto;max-height:520px;overflow-y:auto">
+  <table>
+    <thead>
+      <tr>
+        <th>日期</th>
+        <th>長江A00中價 (CNY/MT)</th>
+        <th>USD/CNY</th>
+        <th>鋁絞線 (USD/MT)</th>
+        <th>日變化</th>
+      </tr>
+    </thead>
+    <tbody id="wireBody"></tbody>
+  </table>
+  </div>
+</div>
+
+<div class="footer">
+  由 宇鏑有限公司整理 &nbsp;·&nbsp; 撰寫人：Peter &nbsp;·&nbsp; 資料來源：Westmetall GmbH &amp; Co. KG · westmetall.com &nbsp;·&nbsp; 長江A00中價：長江有色金屬網 lvdingjia.com
+</div>
+
 <script>
-async function loadStats() {
-  try {
-    const res = await fetch('dashboard.html');
-    const text = await res.text();
-    const dateM = text.match(/date:"(\d{4}-\d{2}-\d{2})"/);
-    if (dateM) document.getElementById('latestDate').textContent = dateM[1];
-    const priceM = text.match(/cash:([\d.]+)/);
-    if (priceM) document.getElementById('latestPrice').textContent = '$' + Number(priceM[1]).toLocaleString();
-  } catch(e) {}
+const FX = {"2026-10-02":6.7049,"2026-10-01":6.7047,"2026-09-30":6.7048,"2026-09-29":6.7034,"2026-09-28":6.7107,"2026-09-25":6.7132,"2026-09-24":6.7123,"2026-09-23":6.7113,"2026-09-22":6.6995,"2026-09-21":6.6956,"2026-09-18":6.6996,"2026-09-17":6.7070,"2026-09-16":6.7071,"2026-09-15":6.7167,"2026-09-14":6.7164,"2026-09-11":6.7083,"2026-09-10":6.7066,"2026-09-09":6.7106,"2026-09-08":6.7105,"2026-09-07":6.7112,"2026-09-04":6.7110,"2026-09-03":6.7191,"2026-09-02":6.7192,"2026-09-01":6.7208,"2026-08-31":6.7220,"2026-08-28":6.7280,"2026-08-27":6.7217,"2026-08-26":6.7227,"2026-08-25":6.7204,"2026-08-24":6.7225,"2026-08-21":6.7214,"2026-08-20":6.7235,"2026-08-19":6.7313,"2026-08-18":6.7437,"2026-08-17":6.7407,"2026-08-14":6.7430,"2026-08-13":6.7433,"2026-08-12":6.7445,"2026-08-11":6.7454,"2026-08-10":6.7457,"2026-08-07":6.7471,"2026-08-06":6.7491,"2026-08-05":6.7500,"2026-08-04":6.7535,"2026-08-03":6.7529,"2026-07-31":6.7515,"2026-07-30":6.7551,"2026-07-29":6.7663,"2026-07-28":6.7708,"2026-07-27":6.7656,"2026-07-24":6.7722,"2026-07-23":6.7752,"2026-07-22":6.7730,"2026-07-21":6.7661,"2026-07-20":6.7692,"2026-07-17":6.7752,"2026-07-16":6.7732,"2026-07-15":6.7690,"2026-07-14":6.7708,"2026-07-13":6.7805,"2026-07-10":6.7775,"2026-07-09":6.7933,"2026-07-08":6.8037,"2026-07-07":6.7942,"2026-07-06":6.7963,"2026-07-03":6.7843,"2026-07-02":6.7874,"2026-07-01":6.7944,"2026-06-30":6.7905,"2026-06-29":6.7940,"2026-06-26":6.7982,"2026-06-25":6.7944,"2026-06-24":6.8019,"2026-06-23":6.7906,"2026-06-22":6.7749,"2026-06-19":6.7696,"2026-06-18":6.7693,"2026-06-17":6.7575,"2026-06-16":6.7576,"2026-06-15":6.7591,"2026-06-12":6.7674,"2026-06-11":6.7762,"2026-06-10":6.7729,"2026-06-09":6.7728,"2026-06-08":6.7743,"2026-06-05":6.7764,"2026-06-04":6.7742,"2026-06-03":6.7698,"2026-06-02":6.7626,"2026-06-01":6.7658,"2026-05-29":6.7664,"2026-05-28":6.7790,"2026-05-27":6.7791,"2026-05-26":6.7865,"2026-05-25":6.7948,"2026-05-22":6.7948,"2026-05-21":6.8025,"2026-05-20":6.8015,"2026-05-19":6.8150,"2026-05-18":6.8003,"2026-05-15":6.8099,"2026-05-14":6.7852,"2026-05-13":6.7910,"2026-05-12":6.7921,"2026-05-11":6.7950,"2026-05-08":6.8008,"2026-05-07":6.8019,"2026-05-06":6.8113,"2026-05-05":6.8304,"2026-05-04":6.8303,"2026-05-01":6.8283,"2026-04-30":6.8282,"2026-04-29":6.8383,"2026-04-28":6.8375,"2026-04-27":6.8232,"2026-04-24":6.8363,"2026-04-23":6.8265,"2026-04-22":6.8248,"2026-04-21":6.8209,"2026-04-20":6.8178,"2026-04-17":6.8177,"2026-04-16":6.8216,"2026-04-15":6.8183,"2026-04-14":6.8161,"2026-04-13":6.8304,"2026-04-10":6.8280,"2026-04-09":6.8319,"2026-04-08":6.8301,"2026-04-07":6.8574,"2026-04-06":6.8826,"2026-04-03":6.8827,"2026-04-02":6.8856,"2026-04-01":6.8720,"2026-03-31":6.8947,"2026-03-30":6.9119,"2026-03-27":6.9119,"2026-03-26":6.9115,"2026-03-25":6.9015,"2026-03-24":6.8927,"2026-03-23":6.8805,"2026-03-20":6.8864,"2026-03-19":6.9005,"2026-03-18":6.8731,"2026-03-17":6.8869,"2026-03-16":6.8962,"2026-03-13":6.8966,"2026-03-12":6.8690,"2026-03-11":6.8663,"2026-03-10":6.8770,"2026-03-09":6.9111,"2026-03-06":6.8968,"2026-03-05":6.8915,"2026-03-04":6.8975,"2026-03-03":6.9002,"2026-03-02":6.8825,"2026-02-27":6.8582,"2026-02-26":6.8413,"2026-02-25":6.8695,"2026-02-24":6.8841,"2026-02-23":6.9088,"2026-02-20":6.9088,"2026-02-19":6.9088,"2026-02-18":6.9085,"2026-02-17":6.9087,"2026-02-16":6.9087,"2026-02-13":6.9087,"2026-02-12":6.9007,"2026-02-11":6.9133,"2026-02-10":6.9109,"2026-02-09":6.9225,"2026-02-06":6.9390,"2026-02-05":6.9381,"2026-02-04":6.9418,"2026-02-03":6.9382,"2026-02-02":6.9465,"2026-01-30":6.9518,"2026-01-29":6.9484,"2026-01-28":6.9464,"2026-01-27":6.9547,"2026-01-26":6.9544,"2026-01-23":6.9633,"2026-01-22":6.9736,"2026-01-21":6.9639,"2026-01-20":6.9612,"2026-01-19":6.9641,"2026-01-16":6.9689,"2026-01-15":6.9664,"2026-01-14":6.9738,"2026-01-13":6.9780,"2026-01-12":6.9732,"2026-01-09":6.9774,"2026-01-08":6.9838,"2026-01-07":6.9973,"2026-01-06":6.9837,"2026-01-05":6.9887,"2026-01-02":6.9939};
+const FX_DATES = Object.keys(FX).sort();
+function fxRateOn(d){ if (FX[d]) return FX[d]; let r=null; for (const k of FX_DATES){ if (k<=d) r=FX[k]; else break; } return r; }
+function wireUsd(a00, d){ const r=fxRateOn(d); return r ? (a00+1600)/1.13/r : null; }
+</script>
+<script>
+const raw = [
+  { date:"2026-10-02", cash:3109.50, fwd:3122.00, stock:240375 },
+  { date:"2026-10-01", cash:3120.00, fwd:3131.00, stock:240625 },
+  { date:"2026-09-30", cash:3204.00, fwd:3210.00, stock:241375 },
+  { date:"2026-09-29", cash:3225.50, fwd:3232.00, stock:241375 },
+  { date:"2026-09-28", cash:3248.50, fwd:3252.00, stock:241375 },
+  { date:"2026-09-25", cash:3254.00, fwd:3267.00, stock:241375 },
+  { date:"2026-09-24", cash:3228.00, fwd:3252.50, stock:241375 },
+  { date:"2026-09-23", cash:3240.00, fwd:3260.00, stock:241375 },
+  { date:"2026-09-22", cash:3242.00, fwd:3264.00, stock:242125 },
+  { date:"2026-09-21", cash:3262.50, fwd:3273.00, stock:242200 },
+  { date:"2026-09-18", cash:3285.00, fwd:3282.00, stock:242600 },
+  { date:"2026-09-17", cash:3303.50, fwd:3285.00, stock:242600 },
+  { date:"2026-09-16", cash:3310.00, fwd:3289.00, stock:243600 },
+  { date:"2026-09-15", cash:3260.00, fwd:3236.00, stock:243600 },
+  { date:"2026-09-14", cash:3311.00, fwd:3257.00, stock:243850 },
+  { date:"2026-09-11", cash:3274.00, fwd:3250.00, stock:244100 },
+  { date:"2026-09-10", cash:3343.00, fwd:3318.00, stock:244350 },
+  { date:"2026-09-09", cash:3352.00, fwd:3338.00, stock:244525 },
+  { date:"2026-09-08", cash:3325.00, fwd:3319.00, stock:244525 },
+  { date:"2026-09-07", cash:3310.00, fwd:3308.00, stock:244525 },
+  { date:"2026-09-04", cash:3292.50, fwd:3293.00, stock:244525 },
+  { date:"2026-09-03", cash:3303.00, fwd:3303.50, stock:245975 },
+  { date:"2026-09-02", cash:3255.50, fwd:3253.50, stock:246225 },
+  { date:"2026-09-01", cash:3261.00, fwd:3261.00, stock:246725 },
+  { date:"2026-08-28", cash:3222.00, fwd:3241.00, stock:246725 },
+  { date:"2026-08-27", cash:3212.50, fwd:3216.00, stock:246825 },
+  { date:"2026-08-26", cash:3227.50, fwd:3239.00, stock:246825 },
+  { date:"2026-08-25", cash:3188.00, fwd:3206.50, stock:246825 },
+  { date:"2026-08-24", cash:3215.50, fwd:3235.00, stock:246925 },
+  { date:"2026-08-21", cash:3227.00, fwd:3244.00, stock:246925 },
+  { date:"2026-08-20", cash:3182.00, fwd:3183.00, stock:246925 },
+  { date:"2026-08-19", cash:3191.50, fwd:3212.00, stock:246925 },
+  { date:"2026-08-18", cash:3219.00, fwd:3234.00, stock:246925 },
+  { date:"2026-08-17", cash:3272.00, fwd:3272.00, stock:246925 },
+  { date:"2026-08-14", cash:3248.00, fwd:3246.00, stock:248300 },
+  { date:"2026-08-13", cash:3279.00, fwd:3275.00, stock:250000 },
+  { date:"2026-08-12", cash:3307.50, fwd:3308.50, stock:251700 },
+  { date:"2026-08-11", cash:3373.00, fwd:3374.00, stock:253400 },
+  { date:"2026-08-10", cash:3327.50, fwd:3320.50, stock:254900 },
+  { date:"2026-08-07", cash:3279.50, fwd:3280.00, stock:256400 },
+  { date:"2026-08-06", cash:3261.00, fwd:3260.00, stock:257900 },
+  { date:"2026-08-05", cash:3229.00, fwd:3229.50, stock:259400 },
+  { date:"2026-08-04", cash:3271.00, fwd:3236.50, stock:260900 },
+  { date:"2026-08-03", cash:3260.00, fwd:3212.00, stock:262650 },
+  { date:"2026-07-31", cash:3196.00, fwd:3179.00, stock:264400 },
+  { date:"2026-07-30", cash:3231.00, fwd:3187.00, stock:266300 },
+  { date:"2026-07-29", cash:3207.00, fwd:3177.00, stock:267800 },
+  { date:"2026-07-28", cash:3159.50, fwd:3143.50, stock:269300 },
+  { date:"2026-07-27", cash:3192.00, fwd:3181.00, stock:271275 },
+  { date:"2026-07-24", cash:3175.00, fwd:3160.50, stock:272775 },
+  { date:"2026-07-23", cash:3194.00, fwd:3182.00, stock:275175 },
+  { date:"2026-07-22", cash:3205.00, fwd:3185.00, stock:276775 },
+  { date:"2026-07-21", cash:3183.50, fwd:3170.50, stock:278275 },
+  { date:"2026-07-20", cash:3156.00, fwd:3147.50, stock:279775 },
+  { date:"2026-07-17", cash:3154.00, fwd:3146.50, stock:280100 },
+  { date:"2026-07-16", cash:3170.00, fwd:3166.50, stock:281600 },
+  { date:"2026-07-15", cash:3153.50, fwd:3150.50, stock:283100 },
+  { date:"2026-07-14", cash:3171.00, fwd:3167.50, stock:284600 },
+  { date:"2026-07-13", cash:3138.50, fwd:3147.00, stock:286225 },
+  { date:"2026-07-10", cash:3156.00, fwd:3153.00, stock:287725 },
+  { date:"2026-07-09", cash:3164.00, fwd:3169.00, stock:289225 },
+  { date:"2026-07-08", cash:3141.00, fwd:3147.00, stock:290825 },
+  { date:"2026-07-07", cash:3119.00, fwd:3127.50, stock:292425 },
+  { date:"2026-07-06", cash:3105.00, fwd:3113.00, stock:295550 },
+  { date:"2026-07-03", cash:3080.00, fwd:3087.00, stock:298775 },
+  { date:"2026-07-02", cash:3061.50, fwd:3065.00, stock:300275 },
+  { date:"2026-07-01", cash:3075.00, fwd:3073.00, stock:301775 },
+  { date:"2026-06-30", cash:3105.50, fwd:3112.00, stock:303675 },
+  { date:"2026-06-29", cash:3160.50, fwd:3166.00, stock:305225 },
+  { date:"2026-06-26", cash:3164.00, fwd:3176.00, stock:306725 },
+  { date:"2026-06-25", cash:3132.00, fwd:3146.00, stock:308225 },
+  { date:"2026-06-24", cash:3150.00, fwd:3160.50, stock:310225 },
+  { date:"2026-06-23", cash:3263.50, fwd:3271.00, stock:311725 },
+  { date:"2026-06-22", cash:3405.00, fwd:3406.00, stock:313800 },
+  { date:"2026-06-19", cash:3400.00, fwd:3398.00, stock:315300 },
+  { date:"2026-06-18", cash:3402.00, fwd:3401.00, stock:315525 },
+  { date:"2026-06-17", cash:3405.50, fwd:3410.00, stock:316525 },
+  { date:"2026-06-16", cash:3359.00, fwd:3389.50, stock:318000 },
+  { date:"2026-06-15", cash:3419.50, fwd:3431.00, stock:319500 },
+  { date:"2026-06-12", cash:3536.00, fwd:3532.00, stock:319925 },
+  { date:"2026-06-11", cash:3498.50, fwd:3495.50, stock:322000 },
+  { date:"2026-06-10", cash:3489.00, fwd:3481.00, stock:324825 },
+  { date:"2026-06-09", cash:3608.00, fwd:3586.00, stock:327750 },
+  { date:"2026-06-08", cash:3669.50, fwd:3600.50, stock:330950 },
+  { date:"2026-06-05", cash:3736.00, fwd:3669.50, stock:333200 },
+  { date:"2026-06-04", cash:3739.00, fwd:3663.00, stock:335200 },
+  { date:"2026-06-03", cash:3797.00, fwd:3723.00, stock:335450 },
+  { date:"2026-06-02", cash:3855.00, fwd:3752.50, stock:335450 },
+  { date:"2026-06-01", cash:3795.50, fwd:3685.50, stock:337700 },
+  { date:"2026-05-29", cash:3769.50, fwd:3685.00, stock:338000 },
+  { date:"2026-05-28", cash:3735.00, fwd:3640.00, stock:338000 },
+  { date:"2026-05-27", cash:3738.00, fwd:3664.00, stock:339250 },
+  { date:"2026-05-26", cash:3759.00, fwd:3682.00, stock:339350 },
+  { date:"2026-05-22", cash:3706.00, fwd:3642.00, stock:339475 },
+  { date:"2026-05-21", cash:3720.00, fwd:3649.00, stock:339475 },
+  { date:"2026-05-20", cash:3644.00, fwd:3590.00, stock:339475 },
+  { date:"2026-05-19", cash:3665.00, fwd:3612.00, stock:340575 },
+  { date:"2026-05-18", cash:3637.00, fwd:3565.00, stock:341775 },
+  { date:"2026-05-15", cash:3635.00, fwd:3580.00, stock:344000 },
+  { date:"2026-05-14", cash:3768.00, fwd:3666.00, stock:346500 },
+  { date:"2026-05-13", cash:3729.50, fwd:3650.00, stock:348750 },
+  { date:"2026-05-12", cash:3639.50, fwd:3566.00, stock:351000 },
+  { date:"2026-05-11", cash:3655.00, fwd:3571.00, stock:353350 },
+  { date:"2026-05-08", cash:3560.50, fwd:3511.50, stock:355775 },
+  { date:"2026-05-07", cash:3559.00, fwd:3510.00, stock:358225 },
+  { date:"2026-05-06", cash:3597.00, fwd:3545.50, stock:360225 },
+  { date:"2026-05-05", cash:3632.50, fwd:3563.00, stock:362725 },
+  { date:"2026-05-01", cash:3584.00, fwd:3523.00, stock:364725 },
+  { date:"2026-04-30", cash:3525.50, fwd:3482.00, stock:367050 },
+  { date:"2026-04-29", cash:3604.00, fwd:3556.00, stock:368200 },
+  { date:"2026-04-28", cash:3600.00, fwd:3537.00, stock:370275 },
+  { date:"2026-04-27", cash:3662.00, fwd:3588.00, stock:372700 },
+  { date:"2026-04-24", cash:3685.00, fwd:3600.00, stock:376275 },
+  { date:"2026-04-23", cash:3642.00, fwd:3590.00, stock:378825 },
+  { date:"2026-04-22", cash:3652.00, fwd:3605.00, stock:381050 },
+  { date:"2026-04-21", cash:3613.00, fwd:3569.00, stock:383275 },
+  { date:"2026-04-20", cash:3590.00, fwd:3552.50, stock:386250 },
+  { date:"2026-04-17", cash:3660.00, fwd:3632.00, stock:388850 },
+  { date:"2026-04-16", cash:3678.50, fwd:3636.50, stock:391675 },
+  { date:"2026-04-15", cash:3581.00, fwd:3565.50, stock:393775 },
+  { date:"2026-04-14", cash:3625.00, fwd:3566.00, stock:395975 },
+  { date:"2026-04-13", cash:3665.50, fwd:3571.00, stock:397100 },
+  { date:"2026-04-10", cash:3526.00, fwd:3483.00, stock:399150 },
+  { date:"2026-04-09", cash:3494.50, fwd:3457.00, stock:401625 },
+  { date:"2026-04-08", cash:3520.00, fwd:3465.00, stock:403875 },
+  { date:"2026-04-07", cash:3600.00, fwd:3509.00, stock:409900 },
+  { date:"2026-04-02", cash:3505.00, fwd:3425.00, stock:411950 },
+  { date:"2026-04-01", cash:3583.50, fwd:3525.00, stock:414175 },
+  { date:"2026-03-31", cash:3585.00, fwd:3506.00, stock:416775 },
+  { date:"2026-03-30", cash:3482.00, fwd:3425.00, stock:418675 },
+  { date:"2026-03-27", cash:3292.00, fwd:3242.00, stock:420875 },
+  { date:"2026-03-26", cash:3332.00, fwd:3273.00, stock:423075 },
+  { date:"2026-03-25", cash:3294.50, fwd:3247.00, stock:426750 },
+  { date:"2026-03-24", cash:3242.50, fwd:3218.00, stock:427675 },
+  { date:"2026-03-23", cash:3251.50, fwd:3222.00, stock:427675 },
+  { date:"2026-03-20", cash:3329.00, fwd:3287.50, stock:429675 },
+  { date:"2026-03-19", cash:3200.00, fwd:3155.00, stock:432725 },
+  { date:"2026-03-18", cash:3400.00, fwd:3380.00, stock:436625 },
+  { date:"2026-03-17", cash:3426.00, fwd:3413.00, stock:440325 },
+  { date:"2026-03-16", cash:3440.00, fwd:3417.00, stock:442825 },
+  { date:"2026-03-13", cash:3520.00, fwd:3486.00, stock:445300 },
+  { date:"2026-03-12", cash:3516.50, fwd:3494.00, stock:447300 },
+  { date:"2026-03-11", cash:3467.00, fwd:3444.00, stock:450125 },
+  { date:"2026-03-10", cash:3402.50, fwd:3390.00, stock:452375 },
+  { date:"2026-03-09", cash:3406.50, fwd:3387.00, stock:454625 },
+  { date:"2026-03-06", cash:3385.00, fwd:3362.00, stock:456875 },
+  { date:"2026-03-05", cash:3298.50, fwd:3302.00, stock:459125 },
+  { date:"2026-03-04", cash:3378.00, fwd:3372.00, stock:461125 },
+  { date:"2026-03-03", cash:3269.00, fwd:3260.50, stock:461550 },
+  { date:"2026-03-02", cash:3226.00, fwd:3233.00, stock:463550 },
+  { date:"2026-02-27", cash:3157.50, fwd:3165.00, stock:465550 },
+  { date:"2026-02-26", cash:3121.00, fwd:3147.00, stock:467550 },
+  { date:"2026-02-25", cash:3107.00, fwd:3131.50, stock:469550 },
+  { date:"2026-02-24", cash:3077.00, fwd:3102.00, stock:471550 },
+  { date:"2026-02-23", cash:3070.00, fwd:3097.00, stock:473550 },
+  { date:"2026-02-20", cash:3053.00, fwd:3079.00, stock:475550 },
+  { date:"2026-02-19", cash:3026.00, fwd:3055.50, stock:475550 },
+  { date:"2026-02-18", cash:3035.00, fwd:3061.00, stock:475550 },
+  { date:"2026-02-17", cash:3014.00, fwd:3047.00, stock:477550 },
+  { date:"2026-02-16", cash:3037.50, fwd:3074.00, stock:479550 },
+  { date:"2026-02-13", cash:2996.00, fwd:3028.00, stock:481550 },
+  { date:"2026-02-12", cash:3117.00, fwd:3146.00, stock:483550 },
+  { date:"2026-02-11", cash:3098.00, fwd:3127.00, stock:485750 },
+  { date:"2026-02-10", cash:3063.00, fwd:3093.00, stock:486975 },
+  { date:"2026-02-09", cash:3083.50, fwd:3108.00, stock:488975 },
+  { date:"2026-02-06", cash:3045.00, fwd:3063.50, stock:490975 },
+  { date:"2026-02-05", cash:3014.00, fwd:3037.00, stock:492975 },
+  { date:"2026-02-04", cash:3047.50, fwd:3076.00, stock:495175 },
+  { date:"2026-02-03", cash:3103.00, fwd:3113.00, stock:495175 },
+  { date:"2026-02-02", cash:3042.00, fwd:3066.00, stock:497175 },
+  { date:"2026-01-30", cash:3110.00, fwd:3134.00, stock:495725 },
+  { date:"2026-01-29", cash:3325.00, fwd:3326.00, stock:497725 },
+  { date:"2026-01-28", cash:3259.00, fwd:3262.00, stock:499975 },
+  { date:"2026-01-27", cash:3166.50, fwd:3178.00, stock:502250 },
+  { date:"2026-01-26", cash:3192.00, fwd:3195.50, stock:505275 },
+  { date:"2026-01-23", cash:3175.00, fwd:3177.00, stock:507275 },
+  { date:"2026-01-22", cash:3093.50, fwd:3114.00, stock:509275 },
+  { date:"2026-01-21", cash:3114.00, fwd:3123.00, stock:507175 },
+  { date:"2026-01-20", cash:3137.00, fwd:3136.00, stock:483000 },
+  { date:"2026-01-19", cash:3168.50, fwd:3152.00, stock:485000 },
+  { date:"2026-01-16", cash:3147.00, fwd:3138.50, stock:488000 },
+  { date:"2026-01-15", cash:3174.00, fwd:3176.00, stock:490000 },
+  { date:"2026-01-14", cash:3221.00, fwd:3205.00, stock:492000 },
+  { date:"2026-01-13", cash:3194.00, fwd:3183.50, stock:494000 },
+  { date:"2026-01-12", cash:3185.50, fwd:3177.50, stock:495825 },
+  { date:"2026-01-09", cash:3180.00, fwd:3163.00, stock:497825 },
+  { date:"2026-01-08", cash:3081.00, fwd:3090.00, stock:499750 },
+  { date:"2026-01-07", cash:3092.00, fwd:3112.50, stock:501750 },
+  { date:"2026-01-06", cash:3093.00, fwd:3112.00, stock:504250 },
+  { date:"2026-01-05", cash:3022.50, fwd:3051.00, stock:506750 },
+  { date:"2026-01-02", cash:2986.00, fwd:3010.50, stock:509250 },
+];
+
+// ── MJP Premium ──
+const mjpData = [
+  { quarter:'Q1 2026', value: 195,   note:'已確認',     confirmed: true  },
+  { quarter:'Q2 2026', value: 351,   note:'已確認',     confirmed: true  },
+  { quarter:'Q3 2026', value: 395,   note:'已確認',     confirmed: true  },
+  { quarter:'Q4 2026', value: 280,   note:'已確認',     confirmed: true  },
+];
+
+// ── 區域 Premium ──
+const regionalPremiumData = [
+  { label:'歐洲 Europe', value: 600,  note:null },
+  { label:'美國 US',     value: 2535, note:'≈ c115/lb' },
+];
+
+// ── 鋁棒(Billet) Premium ──
+const billetPremiumData = [
+  { label:'中國 China', value: 450 },
+  { label:'亞洲 Asia',  value: 550 },
+  { label:'歐洲 Europe', value: 1200 },
+];
+
+// ── 長江鋁錠（滬鋁）平均價 CNY/MT — 資料來源：長江有色金屬網 lvdingjia.com ──
+const cnAl = [
+  { date:"2026-09-30", avg:24030 },
+  { date:"2026-09-29", avg:24110 },
+  { date:"2026-09-28", avg:24170 },
+  { date:"2026-09-24", avg:24240 },
+  { date:"2026-09-23", avg:24240 },
+  { date:"2026-09-22", avg:24270 },
+  { date:"2026-09-21", avg:24320 },
+  { date:"2026-09-18", avg:24380 },
+  { date:"2026-09-17", avg:24180 },
+  { date:"2026-09-16", avg:24160 },
+  { date:"2026-09-15", avg:24140 },
+  { date:"2026-09-14", avg:24080 },
+  { date:"2026-09-11", avg:24240 },
+  { date:"2026-09-10", avg:24560 },
+  { date:"2026-09-09", avg:24560 },
+  { date:"2026-09-08", avg:24460 },
+  { date:"2026-09-07", avg:24410 },
+  { date:"2026-09-04", avg:24360 },
+  { date:"2026-09-03", avg:24350 },
+  { date:"2026-08-20", avg:23590 },
+  { date:"2026-08-19", avg:23670 },
+  { date:"2026-08-18", avg:23890 },
+  { date:"2026-08-17", avg:24080 },
+  { date:"2026-08-14", avg:23870 },
+  { date:"2026-08-13", avg:24110 },
+  { date:"2026-08-12", avg:24360 },
+  { date:"2026-08-11", avg:24100 },
+  { date:"2026-08-10", avg:23980 },
+  { date:"2026-08-07", avg:23970 },
+  { date:"2026-08-06", avg:23790 },
+  { date:"2026-08-05", avg:23690 },
+  { date:"2026-08-04", avg:23730 },
+  { date:"2026-08-03", avg:23490 },
+  { date:"2026-07-31", avg:23630 },
+  { date:"2026-06-29", avg:22930 },
+  { date:"2026-06-26", avg:22870 },
+  { date:"2026-06-25", avg:22840 },
+  { date:"2026-06-24", avg:23470 },
+  { date:"2026-06-23", avg:23800 },
+  { date:"2026-06-22", avg:23870 },
+  { date:"2026-06-18", avg:23870 },
+  { date:"2026-06-17", avg:23850 },
+  { date:"2026-06-16", avg:23800 },
+  { date:"2026-06-15", avg:24130 },
+  { date:"2026-06-12", avg:24130 },
+  { date:"2026-06-11", avg:23970 },
+  { date:"2026-06-10", avg:23790 },
+  { date:"2026-06-09", avg:23900 },
+  { date:"2026-06-08", avg:24000 },
+  { date:"2026-06-05", avg:24200 },
+  { date:"2026-06-04", avg:24210 },
+  { date:"2026-06-03", avg:24450 },
+  { date:"2026-06-02", avg:24330 },
+  { date:"2026-06-01", avg:24180 },
+  { date:"2026-05-29", avg:24210 },
+  { date:"2026-05-28", avg:24140 },
+  { date:"2026-05-27", avg:24380 },
+  { date:"2026-05-26", avg:24080 },
+  { date:"2026-05-25", avg:24300 },
+  { date:"2026-05-22", avg:24350 },
+  { date:"2026-05-21", avg:24380 },
+  { date:"2026-05-20", avg:24260 },
+  { date:"2026-05-19", avg:24200 },
+  { date:"2026-05-18", avg:24050 },
+  { date:"2026-05-15", avg:24360 },
+  { date:"2026-05-14", avg:24610 },
+  { date:"2026-05-13", avg:24550 },
+  { date:"2026-05-12", avg:24380 },
+  { date:"2026-05-11", avg:24380 },
+  { date:"2026-05-08", avg:24220 },
+  { date:"2026-05-07", avg:24040 },
+  { date:"2026-05-06", avg:24520 },
+  { date:"2026-04-30", avg:24390 },
+  { date:"2026-04-29", avg:24460 },
+  { date:"2026-04-28", avg:24460 },
+  { date:"2026-04-27", avg:24800 },
+  { date:"2026-04-24", avg:24760 },
+  { date:"2026-04-23", avg:24780 },
+  { date:"2026-04-22", avg:24770 },
+  { date:"2026-04-21", avg:24660 },
+  { date:"2026-04-20", avg:24910 },
+  { date:"2026-04-17", avg:25140 },
+  { date:"2026-04-16", avg:25080 },
+  { date:"2026-04-15", avg:24740 },
+  { date:"2026-04-14", avg:24740 },
+  { date:"2026-04-13", avg:24450 },
+  { date:"2026-04-10", avg:24530 },
+  { date:"2026-04-09", avg:24410 },
+  { date:"2026-04-08", avg:24550 },
+  { date:"2026-04-07", avg:24470 },
+  { date:"2026-04-03", avg:24510 },
+  { date:"2026-04-02", avg:24620 },
+  { date:"2026-04-01", avg:24600 },
+  { date:"2026-03-31", avg:24600 },
+  { date:"2026-03-30", avg:24520 },
+  { date:"2026-03-27", avg:23820 },
+  { date:"2026-03-26", avg:23510 },
+  { date:"2026-03-25", avg:23760 },
+  { date:"2026-03-24", avg:23450 },
+  { date:"2026-03-23", avg:23440 },
+  { date:"2026-03-20", avg:24080 },
+  { date:"2026-03-19", avg:24470 },
+  { date:"2026-03-18", avg:24500 },
+  { date:"2026-03-17", avg:24900 },
+  { date:"2026-03-16", avg:24780 },
+  { date:"2026-03-13", avg:25110 },
+  { date:"2026-03-12", avg:25240 },
+  { date:"2026-03-11", avg:25020 },
+  { date:"2026-03-10", avg:24450 },
+  { date:"2026-03-09", avg:25250 },
+  { date:"2026-03-06", avg:24450 },
+  { date:"2026-03-05", avg:25100 },
+  { date:"2026-03-04", avg:24380 },
+  { date:"2026-03-03", avg:23940 },
+  { date:"2026-03-02", avg:23620 },
+  { date:"2026-02-27", avg:23400 },
+  { date:"2026-02-26", avg:23530 },
+  { date:"2026-02-25", avg:23380 },
+  { date:"2026-02-24", avg:23400 },
+  { date:"2026-02-13", avg:23160 },
+  { date:"2026-02-12", avg:23350 },
+  { date:"2026-02-11", avg:23250 },
+  { date:"2026-02-10", avg:23290 },
+  { date:"2026-02-09", avg:23390 },
+  { date:"2026-02-06", avg:23140 },
+  { date:"2026-02-05", avg:23330 },
+  { date:"2026-02-04", avg:23760 },
+  { date:"2026-02-03", avg:23300 },
+  { date:"2026-02-02", avg:23700 },
+  { date:"2026-01-30", avg:24670 },
+  { date:"2026-01-29", avg:24850 },
+  { date:"2026-01-28", avg:24250 },
+  { date:"2026-01-27", avg:23870 },
+  { date:"2026-01-26", avg:24040 },
+  { date:"2026-01-23", avg:24110 },
+  { date:"2026-01-22", avg:23750 },
+];
+const cnAlMap = new Map(cnAl.map(r => [r.date, r.avg]));
+
+// ── Chronological order — chart uses last 60 days, table uses last 30 ──
+const dataFull = [...raw].reverse();           // all, oldest→newest
+const data     = dataFull.slice(-60);          // last 60 for chart
+const N        = data.length;
+const tableRows = raw.slice(0, 30);            // last 30 for table (raw is newest-first)
+
+// ── Helpers ──
+function fmtNum(n) { return Math.round(n).toLocaleString('en-US'); }
+function fmtDateFull(d) {
+  const dt = new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit'});
 }
-loadStats();
+function fmtDateShort(d) {
+  const dt = new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('zh-TW',{month:'short',day:'numeric'});
+}
+function fmtMonth(d) {
+  const dt = new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('zh-TW',{year:'numeric',month:'long'});
+}
+
+// ── KPI Cards ──
+const latest    = raw[0], prev = raw[1], yearStart = raw[raw.length-1];
+const maxCash   = Math.max(...raw.map(r=>r.cash));
+const minCash   = Math.min(...raw.map(r=>r.cash));
+const maxFwd    = Math.max(...raw.map(r=>r.fwd));
+const minFwd    = Math.min(...raw.map(r=>r.fwd));
+const dayChange = latest.cash - prev.cash;
+const fwdDayChange = latest.fwd - prev.fwd;
+const ytdChange = latest.cash - yearStart.cash;
+const ytdPct    = ((ytdChange/yearStart.cash)*100).toFixed(1);
+
+// Spread (3M - Cash): positive = Contango (正價差), negative = Backwardation (負價差)
+const spread    = latest.fwd - latest.cash;
+const spreadLbl = spread >= 0 ? '正價差 (Contango)' : '負價差 (Backwardation)';
+const spreadCls = spread >= 0 ? 'up' : 'down';
+
+// Last month avg (August 2026) — lmCashAvg/lmFwdAvg
+const lastMonthKey  = '2026-09';
+const lastMonthRows = raw.filter(r => r.date.startsWith(lastMonthKey));
+const lmCashAvg = lastMonthRows.reduce((s,r)=>s+r.cash,0) / lastMonthRows.length;
+const lmFwdAvg  = lastMonthRows.reduce((s,r)=>s+r.fwd, 0) / lastMonthRows.length;
+
+// Current month avg (September 2026, known dates only)
+const curMonthKey  = '2026-10';
+const curMonthRows = raw.filter(r => r.date.startsWith(curMonthKey));
+const cmCashAvg = curMonthRows.reduce((s,r)=>s+r.cash,0) / curMonthRows.length;
+const cmFwdAvg  = curMonthRows.reduce((s,r)=>s+r.fwd, 0) / curMonthRows.length;
+
+
+// Monthly high/low (3M forward)
+function monthFwdHL(key) {
+  const rows = raw.filter(r => r.date.startsWith(key));
+  if (!rows.length) return { high: null, low: null };
+  return {
+    high: Math.max(...rows.map(r => r.fwd)),
+    low:  Math.min(...rows.map(r => r.fwd)),
+  };
+}
+const curHL  = monthFwdHL(curMonthKey);
+const mayHL  = monthFwdHL('2026-08');
+const aprHL  = monthFwdHL('2026-07');
+const marHL  = monthFwdHL('2026-06');
+
+// ── 長江鋁錠（滬鋁）最新均價 & 滬倫比 ──
+const latestCn = cnAl[0], prevCn = cnAl[1];
+const cnDayChange = latestCn.avg - prevCn.avg;
+
+// 長江A00 月均價（上個月／上上個月／上上上個月）
+function cnMonthAvg(key) {
+  const rows = cnAl.filter(r => r.date.startsWith(key));
+  if (!rows.length) return null;
+  return rows.reduce((s,r)=>s+r.avg,0) / rows.length;
+}
+const cnMayAvg = cnMonthAvg('2026-09');
+const cnAprAvg = cnMonthAvg('2026-08');
+const cnMarAvg = cnMonthAvg('2026-07');
+const cnFebAvg = cnMonthAvg('2026-06');
+const cnJanAvg = cnMonthAvg('2026-05');
+
+const cnMayMoM    = cnMayAvg - cnAprAvg;
+const cnMayMoMCls = cnMayMoM >= 0 ? 'up' : 'down';
+
+function cnMomTag(cur, prev) {
+  if (cur===null || prev===null) return '';
+  const diff = cur - prev;
+  const pct  = ((diff / prev) * 100).toFixed(1);
+  const col  = diff >= 0 ? '#059669' : '#dc2626';
+  const arrow = diff >= 0 ? '▲' : '▼';
+  return ` <span style="color:${col};font-size:10px">${arrow} ${fmtNum(Math.abs(diff))} (${Math.abs(pct)}%)</span>`;
+}
+
+// 滬倫比 = 長江鋁錠均價(CNY/MT) ÷ LME 3M(USD/MT)，未計入匯率，僅供相對走勢參考
+const lmeMatchCn  = cnAlMap.get(latest.date);
+const prevMatchCn = cnAlMap.get(prev.date);
+const ratio       = lmeMatchCn  !== undefined ? lmeMatchCn  / latest.fwd : null;
+const prevRatio   = prevMatchCn !== undefined ? prevMatchCn / prev.fwd   : null;
+const ratioChange = (ratio !== null && prevRatio !== null) ? ratio - prevRatio : null;
+
+// Stock monthly averages
+const prevPrevMonthKey     = '2026-08';
+const prevPrevPrevMonthKey = '2026-07';
+const febMonthKey          = '2026-06';
+const janMonthKey          = '2026-05';
+
+// 七月 ~ 四月均價（aprCashAvg=七月, marCashAvg=六月, febCashAvg=五月, janCashAvg=四月）
+const apr2Rows   = raw.filter(r => r.date.startsWith(prevPrevMonthKey));
+const mar3Rows   = raw.filter(r => r.date.startsWith(prevPrevPrevMonthKey));
+const feb4Rows   = raw.filter(r => r.date.startsWith(febMonthKey));
+const jan5Rows   = raw.filter(r => r.date.startsWith(janMonthKey));
+const aprCashAvg = apr2Rows.reduce((s,r)=>s+r.cash,0) / apr2Rows.length;
+const aprFwdAvg  = apr2Rows.reduce((s,r)=>s+r.fwd, 0) / apr2Rows.length;
+const marCashAvg = mar3Rows.reduce((s,r)=>s+r.cash,0) / mar3Rows.length;
+const marFwdAvg  = mar3Rows.reduce((s,r)=>s+r.fwd, 0) / mar3Rows.length;
+const febCashAvg = feb4Rows.reduce((s,r)=>s+r.cash,0) / feb4Rows.length;
+const febFwdAvg  = feb4Rows.reduce((s,r)=>s+r.fwd, 0) / feb4Rows.length;
+const janCashAvg = jan5Rows.reduce((s,r)=>s+r.cash,0) / jan5Rows.length;
+const janFwdAvg  = jan5Rows.reduce((s,r)=>s+r.fwd, 0) / jan5Rows.length;
+
+// MoM 漲幅輔助函式
+function momTag(cur, prev) {
+  const diff = cur - prev;
+  const pct  = ((diff / prev) * 100).toFixed(1);
+  const col  = diff >= 0 ? '#059669' : '#dc2626';
+  const arrow = diff >= 0 ? '▲' : '▼';
+  return `<span style="color:${col};font-size:10px;margin-left:4px">${arrow} ${Math.abs(diff).toFixed(1)} (${Math.abs(pct)}%)</span>`;
+}
+const prevPrevStockRows  = raw.filter(r => r.date.startsWith(prevPrevMonthKey));
+const prevPrevPrevStockRows = raw.filter(r => r.date.startsWith(prevPrevPrevMonthKey));
+const prevMonthStockAvg  = Math.round(raw.filter(r => r.date.startsWith(lastMonthKey)).reduce((s,r)=>s+r.stock,0) / raw.filter(r => r.date.startsWith(lastMonthKey)).length);
+const prevPrevStockAvg   = Math.round(prevPrevStockRows.reduce((s,r)=>s+r.stock,0)     / prevPrevStockRows.length);
+const prevPrevPrevStockAvg = Math.round(prevPrevPrevStockRows.reduce((s,r)=>s+r.stock,0) / prevPrevPrevStockRows.length);
+
+function renderKpi(containerId, cards) {
+  const el = document.getElementById(containerId);
+  cards.forEach(k => {
+    const extraHtml = k.extra ? `<div class="kpi-extra">${
+      k.extra.map(e => `<div class="kpi-extra-row">
+        <span class="kpi-extra-label">${e.label}</span>
+        <span class="kpi-extra-val">${e.val}</span>
+      </div>`).join('')
+    }</div>` : '';
+    el.innerHTML += `<div class="kpi-card ${k.color}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-change ${k.cls}">${k.change}</div>
+      ${extraHtml}
+    </div>`;
+  });
+}
+
+renderKpi('kpiRow1', [
+  { label:`最新現金結算/3M · ${fmtDateFull(latest.date)}`, value:`$${fmtNum(latest.cash)} / $${fmtNum(latest.fwd)}`,
+    change:`現金 ${dayChange>=0?'▲':'▼'} ${Math.abs(dayChange).toFixed(2)} ・ 3M ${fwdDayChange>=0?'▲':'▼'} ${Math.abs(fwdDayChange).toFixed(2)} vs 前日`,
+    cls: dayChange>=0?'up':'down', color:'blue' },
+  { label:'3M − 現金價差', value:`${spread>=0?'+':''}${fmtNum(spread)}`,
+    change: spreadLbl,
+    cls: spreadCls, color:'blue' },
+  { label:'當月最高 / 最低 · 3M', value:`$${fmtNum(curHL.high)}`,
+    change:`最低 $${fmtNum(curHL.low)} <span style="color:#94a3b8;font-size:10px">高低差 $${fmtNum(curHL.high - curHL.low)}</span>`,
+    cls:'neutral', color:'blue',
+    extra: [
+      { label:'九月 高／低', val:`$${fmtNum(mayHL.high)} / $${fmtNum(mayHL.low)} <span style="color:#94a3b8;font-size:10px">高低差 $${fmtNum(mayHL.high - mayHL.low)}</span>` },
+      { label:'八月 高／低', val:`$${fmtNum(aprHL.high)} / $${fmtNum(aprHL.low)} <span style="color:#94a3b8;font-size:10px">高低差 $${fmtNum(aprHL.high - aprHL.low)}</span>` },
+      { label:'七月 高／低', val:`$${fmtNum(marHL.high)} / $${fmtNum(marHL.low)} <span style="color:#94a3b8;font-size:10px">高低差 $${fmtNum(marHL.high - marHL.low)}</span>` },
+    ]
+  },
+  { label:'LME 庫存', value:`${(latest.stock/1000).toFixed(0)}k MT`,
+    change:`較前日 ${latest.stock-prev.stock>=0?'+':''}${((latest.stock-prev.stock)/1000).toFixed(1)}k MT`,
+    cls: latest.stock-prev.stock<0?'up':'down', color:'blue',
+    extra: [
+      { label:'九月均值', val: (prevMonthStockAvg/1000).toFixed(1)+'k MT' },
+      { label:'八月均值', val: (prevPrevStockAvg/1000).toFixed(1)+'k MT' },
+      { label:'七月均值', val: (prevPrevPrevStockAvg/1000).toFixed(1)+'k MT' },
+    ]
+  },
+]);
+
+renderKpi('kpiRowCN', [
+  { label:`長江A00中價 · ${fmtDateFull(latestCn.date)}`, value:`¥${fmtNum(latestCn.avg)}`,
+    change:`${cnDayChange>=0?'▲':'▼'} ${fmtNum(Math.abs(cnDayChange))} vs 前日`,
+    cls: cnDayChange>=0?'up':'down', color:'purple' },
+  { label:'滬倫比 · 長江A00 / LME 3M', value: ratio!==null ? ratio.toFixed(2) : '—',
+    change: ratio!==null
+      ? `${fmtDateFull(latest.date)} ・ ¥${fmtNum(lmeMatchCn)} / $${fmtNum(latest.fwd)}` +
+        (ratioChange!==null ? ` <span style="color:${ratioChange>=0?'#059669':'#dc2626'};font-size:10px">(${ratioChange>=0?'▲':'▼'} ${Math.abs(ratioChange).toFixed(2)})</span>` : '')
+      : '當日資料不足',
+    cls:'neutral', color:'purple' },
+  { label:'長江A00中價 · 九月均值', value:`¥${fmtNum(cnMayAvg)}`,
+    change:`${cnMayMoM>=0?'▲':'▼'} ${fmtNum(Math.abs(cnMayMoM))} vs 八月`,
+    cls: cnMayMoMCls, color:'purple',
+    extra: [
+      { label:'八月均值', val:`¥${fmtNum(cnAprAvg)}${cnMomTag(cnAprAvg, cnMarAvg)}` },
+      { label:'七月均值', val:`¥${fmtNum(cnMarAvg)}${cnMomTag(cnMarAvg, cnFebAvg)}` },
+      { label:'六月均值', val:`¥${fmtNum(cnFebAvg)}${cnMomTag(cnFebAvg, cnJanAvg)}` },
+      { label:'五月均值', val:`¥${fmtNum(cnJanAvg)}` },
+    ]
+  },
+]);
+
+const mayCashMoM = lmCashAvg - aprCashAvg;
+const mayFwdMoM  = lmFwdAvg  - aprFwdAvg;
+const mayCashMoMCls = mayCashMoM >= 0 ? 'up' : 'down';
+const mayFwdMoMCls  = mayFwdMoM  >= 0 ? 'up' : 'down';
+
+renderKpi('kpiRow2', [
+  { label:'九月均價 · 現金結算', value:`$${fmtNum(lmCashAvg)}`,
+    change:`${mayCashMoM>=0?'▲':'▼'} ${fmtNum(Math.abs(mayCashMoM))} vs 八月`,
+    cls: mayCashMoMCls, color:'purple',
+    extra: [
+      { label:'八月均值', val:`$${fmtNum(aprCashAvg)}${momTag(aprCashAvg, marCashAvg)}` },
+      { label:'七月均值', val:`$${fmtNum(marCashAvg)}${momTag(marCashAvg, febCashAvg)}` },
+      { label:'六月均值', val:`$${fmtNum(febCashAvg)}${momTag(febCashAvg, janCashAvg)}` },
+      { label:'五月均值', val:`$${fmtNum(janCashAvg)}` },
+    ]
+  },
+  { label:'九月均價 · 3M 期貨', value:`$${fmtNum(lmFwdAvg)}`,
+    change:`${mayFwdMoM>=0?'▲':'▼'} ${fmtNum(Math.abs(mayFwdMoM))} vs 八月`,
+    cls: mayFwdMoMCls, color:'purple',
+    extra: [
+      { label:'八月均值', val:`$${fmtNum(aprFwdAvg)}${momTag(aprFwdAvg, marFwdAvg)}` },
+      { label:'七月均值', val:`$${fmtNum(marFwdAvg)}${momTag(marFwdAvg, febFwdAvg)}` },
+      { label:'六月均值', val:`$${fmtNum(febFwdAvg)}${momTag(febFwdAvg, janFwdAvg)}` },
+      { label:'五月均值', val:`$${fmtNum(janFwdAvg)}` },
+    ]
+  },
+]);
+
+// ── MJP Cards ──
+const mjpEl = document.getElementById('kpiRowMJP');
+mjpData.forEach(m => {
+  const hasVal = m.value !== null;
+  mjpEl.innerHTML += `<div class="kpi-card ${hasVal ? 'green' : 'red'}">
+    <div class="kpi-label">${m.quarter}</div>
+    <div class="kpi-value">${hasVal ? '$'+m.value.toLocaleString() : '—'}</div>
+    <div class="kpi-change ${m.confirmed ? 'up' : hasVal ? 'neutral' : 'neutral'}">${m.note || '—'}</div>
+  </div>`;
+});
+
+// ── Regional Premium Cards ──
+const regionalPremiumEl = document.getElementById('kpiRowRegionalPremium');
+regionalPremiumData.forEach(p => {
+  regionalPremiumEl.innerHTML += `<div class="kpi-card blue">
+    <div class="kpi-label">${p.label}</div>
+    <div class="kpi-value">$${p.value.toLocaleString()}</div>
+    ${p.note ? `<div class="kpi-change neutral">${p.note}</div>` : ''}
+  </div>`;
+});
+
+// ── Billet Premium Cards ──
+const billetPremiumEl = document.getElementById('kpiRowBilletPremium');
+billetPremiumData.forEach(p => {
+  billetPremiumEl.innerHTML += `<div class="kpi-card purple">
+    <div class="kpi-label">${p.label}</div>
+    <div class="kpi-value">$${p.value.toLocaleString()}</div>
+  </div>`;
+});
+
+// ── Custom Canvas Chart (last 60 trading days) ──
+const canvas = document.getElementById('chartCanvas');
+const container = canvas.parentElement;
+
+// Layout constants (responsive)
+const isMobile = window.innerWidth <= 600;
+const PAD      = { top:16, right: isMobile ? 52 : 72, bottom:12, left:16 };
+const PRICE_H  = isMobile ? 140 : 200;
+const GAP      = isMobile ? 16 : 24;
+const SPREAD_H = isMobile ? 44 : 60;
+const STOCK_H  = isMobile ? 44 : 60;
+const TOTAL_H  = PAD.top + PRICE_H + GAP + SPREAD_H + GAP + STOCK_H + 36;
+
+function drawChart(hoverIdx) {
+  const W = container.clientWidth - 56;
+  canvas.width  = W * devicePixelRatio;
+  canvas.height = TOTAL_H * devicePixelRatio;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = TOTAL_H + 'px';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  const cW = W - PAD.left - PAD.right;
+
+  // Panel bounds
+  const pTop  = PAD.top;
+  const pBot  = PAD.top + PRICE_H;
+  const spTop = pBot + GAP;
+  const spBot = spTop + SPREAD_H;
+  const sTop  = spBot + GAP;
+  const sBot  = sTop + STOCK_H;
+
+  function xOf(i) { return PAD.left + (i / (N-1)) * cW; }
+
+  // Price range
+  const allP = data.flatMap(d=>[d.cash, d.fwd]);
+  const minP = Math.min(...allP) - 60;
+  const maxP = Math.max(...allP) + 60;
+  function yPrice(v) { return pTop + (1-(v-minP)/(maxP-minP)) * PRICE_H; }
+
+  // Spread range (3M - cash)
+  const spreads = data.map(d => d.fwd - d.cash);
+  const minSp = Math.min(...spreads) - 10;
+  const maxSp = Math.max(...spreads) + 10;
+  function ySpread(v) { return spTop + (1-(v-minSp)/(maxSp-minSp)) * SPREAD_H; }
+
+  // Stock range
+  const maxS = Math.max(...data.map(d=>d.stock));
+  const minS = Math.min(...data.map(d=>d.stock)) * 0.95;
+  function yStock(v) { return sTop + (1-(v-minS)/(maxS-minS)) * STOCK_H; }
+
+  // ── Price grid lines ──
+  const yTicks = 5;
+  for (let t=0; t<=yTicks; t++) {
+    const v = minP + (maxP-minP)*(t/yTicks);
+    const y = yPrice(v);
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left+cW, y); ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = `${isMobile?8:10}px -apple-system,sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText('$'+Math.round(v).toLocaleString(), PAD.left+cW+6, y+3);
+  }
+
+  // ── Spread panel grid ──
+  const zeroY = ySpread(0);
+  // zero line
+  ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(PAD.left, zeroY); ctx.lineTo(PAD.left+cW, zeroY); ctx.stroke();
+  ctx.fillStyle = '#94a3b8'; ctx.font = '9px -apple-system,sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('0', PAD.left+cW+6, zeroY+3);
+  // top/bottom tick
+  [minSp+10, maxSp-10].forEach(v => {
+    const y = ySpread(v);
+    ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left+cW, y); ctx.stroke();
+    ctx.fillStyle = '#94a3b8'; ctx.font = '9px -apple-system,sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(Math.round(v), PAD.left+cW+6, y+3);
+  });
+  ctx.fillStyle = '#94a3b8'; ctx.font = '9px -apple-system,sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('3M−現金', PAD.left+cW, spTop-5);
+
+  // ── Stock grid lines ──
+  [minS + (maxS-minS)*0.5, maxS].forEach(v => {
+    const y = yStock(v);
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left+cW, y); ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '9px -apple-system,sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(Math.round(v/1000)+'k', PAD.left+cW+6, y+3);
+  });
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '9px -apple-system,sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('庫存 (MT)', PAD.left+cW, sTop-5);
+
+  // ── Month dividers ──
+  let lastM = '';
+  data.forEach((d,i) => {
+    const m = d.date.slice(0,7);
+    if (m !== lastM) {
+      lastM = m;
+      const x = xOf(i);
+      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+      ctx.setLineDash([3,4]);
+      ctx.beginPath(); ctx.moveTo(x, pTop); ctx.lineTo(x, sBot); ctx.stroke();
+      ctx.setLineDash([]);
+      const lbl = new Date(d.date+'T00:00:00').toLocaleDateString('zh-TW',{month:'short'});
+      ctx.fillStyle = '#94a3b8'; ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(lbl, x, sBot+16);
+    }
+  });
+
+  // ── Stock bars ──
+  const barW = Math.max(2, cW / N - 1);
+  data.forEach((d,i) => {
+    const x = xOf(i) - barW/2;
+    const y = yStock(d.stock);
+    const h = sBot - y;
+    ctx.fillStyle = hoverIdx===i ? 'rgba(99,102,241,0.85)' : 'rgba(99,102,241,0.35)';
+    ctx.fillRect(x, y, barW, h);
+  });
+
+  // ── Area fill under cash line ──
+  const gradP = ctx.createLinearGradient(0, pTop, 0, pBot);
+  gradP.addColorStop(0, 'rgba(30,41,59,0.07)');
+  gradP.addColorStop(1, 'rgba(30,41,59,0.00)');
+  ctx.beginPath();
+  data.forEach((d,i) => { const x=xOf(i),y=yPrice(d.cash); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.lineTo(xOf(N-1), pBot); ctx.lineTo(xOf(0), pBot); ctx.closePath();
+  ctx.fillStyle = gradP; ctx.fill();
+
+  // ── Cash settlement line (dark) ──
+  ctx.beginPath();
+  ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2;
+  data.forEach((d,i) => { const x=xOf(i),y=yPrice(d.cash); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.stroke();
+
+  // ── 3M forward line (red, on top) ──
+  ctx.beginPath();
+  ctx.strokeStyle = '#e11d48'; ctx.lineWidth = 3; ctx.lineJoin = 'round';
+  data.forEach((d,i) => { const x=xOf(i),y=yPrice(d.fwd); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.stroke();
+
+
+  // ── Spread panel: area fill（正值=琥珀，負值=紅色）──
+  const z0 = ySpread(0);
+  // Positive area (Contango)
+  ctx.save();
+  ctx.beginPath(); ctx.rect(PAD.left, spTop, cW, z0 - spTop); ctx.clip();
+  const gradSpPos = ctx.createLinearGradient(0, spTop, 0, z0);
+  gradSpPos.addColorStop(0, 'rgba(245,158,11,0.20)');
+  gradSpPos.addColorStop(1, 'rgba(245,158,11,0.02)');
+  ctx.beginPath();
+  data.forEach((d,i) => { const x=xOf(i),y=ySpread(d.fwd-d.cash); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.lineTo(xOf(N-1), z0); ctx.lineTo(xOf(0), z0); ctx.closePath();
+  ctx.fillStyle = gradSpPos; ctx.fill();
+  ctx.restore();
+  // Negative area (Backwardation) — 紅色醒目
+  ctx.save();
+  ctx.beginPath(); ctx.rect(PAD.left, z0, cW, spBot - z0); ctx.clip();
+  const gradSpNeg = ctx.createLinearGradient(0, z0, 0, spBot);
+  gradSpNeg.addColorStop(0, 'rgba(239,68,68,0.30)');
+  gradSpNeg.addColorStop(1, 'rgba(239,68,68,0.06)');
+  ctx.beginPath();
+  data.forEach((d,i) => { const x=xOf(i),y=ySpread(d.fwd-d.cash); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.lineTo(xOf(N-1), z0); ctx.lineTo(xOf(0), z0); ctx.closePath();
+  ctx.fillStyle = gradSpNeg; ctx.fill();
+  ctx.restore();
+
+  // ── Spread line（依正負變色）──
+  for (let i = 1; i < N; i++) {
+    const sp = data[i].fwd - data[i].cash;
+    ctx.beginPath();
+    ctx.strokeStyle = sp < 0 ? '#ef4444' : '#f59e0b';
+    ctx.lineWidth = 1.8;
+    ctx.moveTo(xOf(i-1), ySpread(data[i-1].fwd - data[i-1].cash));
+    ctx.lineTo(xOf(i), ySpread(sp));
+    ctx.stroke();
+  }
+
+  // ── Monthly average line (cash) — horizontal step per month ──
+  const monthGroups = {};
+  data.forEach((d, i) => {
+    const m = d.date.slice(0,7);
+    if (!monthGroups[m]) monthGroups[m] = [];
+    monthGroups[m].push({ cash: d.cash, i });
+  });
+  // data is oldest→newest, so grp[0].i = leftmost x, grp[last].i = rightmost x
+  const monthList = Object.keys(monthGroups).sort().map(m => {
+    const grp = monthGroups[m];
+    const avg = grp.reduce((s, g) => s + g.cash, 0) / grp.length;
+    const xLeft  = xOf(grp[0].i);
+    const xRight = xOf(grp[grp.length - 1].i);
+    return { avg, xLeft, xRight };
+  });
+  ctx.save();
+  ctx.setLineDash([5, 4]);
+  ctx.strokeStyle = '#B59565';
+  ctx.lineWidth = 1.5;
+  monthList.forEach((ml, idx) => {
+    const yA = yPrice(ml.avg);
+    ctx.beginPath();
+    // horizontal line across this month
+    ctx.moveTo(ml.xLeft, yA);
+    ctx.lineTo(ml.xRight, yA);
+    ctx.stroke();
+    // vertical connector to next month
+    if (idx < monthList.length - 1) {
+      const nextY = yPrice(monthList[idx + 1].avg);
+      ctx.beginPath();
+      ctx.moveTo(ml.xRight, yA);
+      ctx.lineTo(ml.xRight, nextY);
+      ctx.stroke();
+    }
+  });
+  ctx.restore();
+
+  // ── Hover crosshair ──
+  if (hoverIdx !== null && hoverIdx >= 0 && hoverIdx < N) {
+    const x = xOf(hoverIdx);
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, pTop); ctx.lineTo(x, sBot); ctx.stroke();
+
+    // cash dot
+    const yCash = yPrice(data[hoverIdx].cash);
+    ctx.beginPath(); ctx.arc(x, yCash, 4, 0, Math.PI*2);
+    ctx.fillStyle = '#1e293b'; ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+
+    // 3M dot
+    const yFwd = yPrice(data[hoverIdx].fwd);
+    ctx.beginPath(); ctx.arc(x, yFwd, 4, 0, Math.PI*2);
+    ctx.fillStyle = '#e11d48'; ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+
+    // spread dot
+    const ySp = ySpread(data[hoverIdx].fwd - data[hoverIdx].cash);
+    ctx.beginPath(); ctx.arc(x, ySp, 4, 0, Math.PI*2);
+    ctx.fillStyle = '#f59e0b'; ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+}
+
+drawChart(null);
+
+// ── Tooltip on mousemove ──
+const tooltip = document.getElementById('tooltipBox');
+const ttDate = document.getElementById('ttDate');
+const ttCash = document.getElementById('ttCash');
+const ttFwd  = document.getElementById('ttFwd');
+const ttChange = document.getElementById('ttChange');
+
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const W  = parseFloat(canvas.style.width);
+  const cW = W - PAD.left - PAD.right;
+  const idx = Math.round((mx - PAD.left) / cW * (N-1));
+  const clamped = Math.max(0, Math.min(N-1, idx));
+
+  drawChart(clamped);
+
+  const d      = data[clamped];
+  const spread = d.fwd - d.cash;
+  const spreadLabel = spread >= 0 ? '正價差' : '負價差';
+
+  ttDate.textContent = fmtDateFull(d.date);
+  ttCash.textContent = '$' + fmtNum(d.cash);
+  ttFwd.textContent  = '$' + fmtNum(d.fwd);
+  ttChange.textContent = spreadLabel + ' ' + (spread >= 0 ? '+' : '') + fmtNum(spread);
+  ttChange.style.color = spread >= 0 ? '#10b981' : '#ef4444';
+
+  const tipW = 190;
+  let tipX = e.clientX - rect.left + 14;
+  let tipY = Math.max(4, e.clientY - rect.top - 60);
+  if (tipX + tipW > W - 10) tipX = e.clientX - rect.left - tipW - 14;
+
+  tooltip.style.left = tipX + 'px';
+  tooltip.style.top  = tipY + 'px';
+  tooltip.style.display = 'block';
+});
+
+canvas.addEventListener('mouseleave', () => {
+  tooltip.style.display = 'none';
+  drawChart(null);
+});
+
+window.addEventListener('resize', () => drawChart(null));
+
+// ── 長江A00 折線圖（最近 60 筆資料） ──
+const cnDataFull = [...cnAl].reverse();         // oldest→newest
+const cnData     = cnDataFull.slice(-60);
+const NCN        = cnData.length;
+
+const canvasCN    = document.getElementById('chartCanvasCN');
+const containerCN = canvasCN.parentElement;
+const PAD_CN      = { top:16, right: isMobile ? 52 : 72, bottom:24, left: isMobile ? 44 : 64 };
+const wireData    = cnData.map(d => wireUsd(d.avg, d.date));
+const fwdMap = new Map(raw.map(r => [r.date, r.fwd]));
+const rawDatesAsc = raw.map(r=>r.date).sort();
+function fwdOn(d){ if (fwdMap.has(d)) return fwdMap.get(d); let r=null; for (const k of rawDatesAsc){ if (k<=d) r=fwdMap.get(k); else break; } return r; }
+function mjpFor(d){ const q='Q'+(Math.floor((+d.slice(5,7)-1)/3)+1)+' 2026'; const m=mjpData.find(x=>x.quarter===q); return (m && m.value!==null) ? m.value : null; }
+const jpmData = cnData.map(d => { const m=mjpFor(d.date); return m===null ? null : fwdOn(d.date)+m; });
+const CHART_H_CN  = isMobile ? 140 : 200;
+
+function drawChartCN(hoverIdx) {
+  const W = containerCN.clientWidth - 56;
+  canvasCN.width  = W * devicePixelRatio;
+  canvasCN.height = CHART_H_CN * devicePixelRatio;
+  canvasCN.style.width  = W + 'px';
+  canvasCN.style.height = CHART_H_CN + 'px';
+
+  const ctx = canvasCN.getContext('2d');
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+  ctx.clearRect(0, 0, W, CHART_H_CN);
+
+  const cW  = W - PAD_CN.left - PAD_CN.right;
+  const top = PAD_CN.top;
+  const bot = CHART_H_CN - PAD_CN.bottom;
+
+  function xOf(i) { return PAD_CN.left + (i / (NCN-1)) * cW; }
+
+  const allV = cnData.map(d => d.avg);
+  const minV = Math.min(...allV) - 100;
+  const maxV = Math.max(...allV) + 100;
+  function yOf(v) { return top + (1-(v-minV)/(maxV-minV)) * (bot-top); }
+  const wv = wireData.concat(jpmData).filter(v=>v!==null);
+  const wMin = Math.min(...wv) - 15, wMax = Math.max(...wv) + 15;
+  function yW(v) { return top + (1-(v-wMin)/(wMax-wMin)) * (bot-top); }
+
+  // ── grid lines ──
+  const yTicks = 4;
+  for (let t=0; t<=yTicks; t++) {
+    const v = minV + (maxV-minV)*(t/yTicks);
+    const y = yOf(v);
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD_CN.left, y); ctx.lineTo(PAD_CN.left+cW, y); ctx.stroke();
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = `${isMobile?8:10}px -apple-system,sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText('¥'+Math.round(v).toLocaleString(), PAD_CN.left+cW+6, y+3);
+    ctx.fillStyle = '#0d9488'; ctx.textAlign = 'right';
+    ctx.fillText('$'+Math.round(wMin+(wMax-wMin)*(t/yTicks)).toLocaleString(), PAD_CN.left-6, y+3);
+    ctx.textAlign = 'left';
+  }
+
+  // ── month dividers ──
+  let lastMCN = '';
+  cnData.forEach((d,i) => {
+    const m = d.date.slice(0,7);
+    if (m !== lastMCN) {
+      lastMCN = m;
+      const x = xOf(i);
+      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+      ctx.setLineDash([3,4]);
+      ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bot); ctx.stroke();
+      ctx.setLineDash([]);
+      const lbl = new Date(d.date+'T00:00:00').toLocaleDateString('zh-TW',{month:'short'});
+      ctx.fillStyle = '#94a3b8'; ctx.font = '10px -apple-system,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(lbl, x, bot+16);
+    }
+  });
+
+  // ── area fill ──
+  const gradCN = ctx.createLinearGradient(0, top, 0, bot);
+  gradCN.addColorStop(0, 'rgba(181,149,101,0.20)');
+  gradCN.addColorStop(1, 'rgba(181,149,101,0.00)');
+  ctx.beginPath();
+  cnData.forEach((d,i) => { const x=xOf(i),y=yOf(d.avg); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.lineTo(xOf(NCN-1), bot); ctx.lineTo(xOf(0), bot); ctx.closePath();
+  ctx.fillStyle = gradCN; ctx.fill();
+
+  // ── line ──
+  ctx.beginPath();
+  ctx.strokeStyle = '#B59565'; ctx.lineWidth = 2;
+  cnData.forEach((d,i) => { const x=xOf(i),y=yOf(d.avg); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+  ctx.stroke();
+
+  // ── 中國鋁絞線 line (USD, left axis) ──
+  ctx.beginPath();
+  ctx.strokeStyle = '#0d9488'; ctx.lineWidth = 2.6; ctx.lineJoin = 'round';
+  let started = false;
+  wireData.forEach((v,i) => { if (v===null) return; const x=xOf(i),y=yW(v); started?ctx.lineTo(x,y):ctx.moveTo(x,y); started=true; });
+  ctx.stroke();
+
+  // ── LME 3M + MJP line (Q3) ──
+  ctx.beginPath();
+  ctx.strokeStyle = '#e11d48'; ctx.lineWidth = 2.6; ctx.lineJoin = 'round';
+  let st2 = false;
+  jpmData.forEach((v,i) => { if (v===null) { st2=false; return; } const x=xOf(i),y=yW(v); st2?ctx.lineTo(x,y):ctx.moveTo(x,y); st2=true; });
+  ctx.stroke();
+
+  // ── hover crosshair + dot ──
+  if (hoverIdx !== null && hoverIdx >= 0 && hoverIdx < NCN) {
+    if (jpmData[hoverIdx]!==null) {
+      ctx.beginPath(); ctx.arc(xOf(hoverIdx), yW(jpmData[hoverIdx]), 4, 0, Math.PI*2);
+      ctx.fillStyle = '#e11d48'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+    if (wireData[hoverIdx]!==null) {
+      ctx.beginPath(); ctx.arc(xOf(hoverIdx), yW(wireData[hoverIdx]), 4, 0, Math.PI*2);
+      ctx.fillStyle = '#0d9488'; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+    const x = xOf(hoverIdx);
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bot); ctx.stroke();
+
+    const y = yOf(cnData[hoverIdx].avg);
+    ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2);
+    ctx.fillStyle = '#B59565'; ctx.fill();
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+}
+
+drawChartCN(null);
+
+const tooltipCN = document.getElementById('tooltipBoxCN');
+const ttDateCN  = document.getElementById('ttDateCN');
+const ttCnAvg   = document.getElementById('ttCnAvg');
+const ttWire    = document.getElementById('ttWire');
+const ttMjp     = document.getElementById('ttMjp');
+
+canvasCN.addEventListener('mousemove', e => {
+  const rect = canvasCN.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const W  = parseFloat(canvasCN.style.width);
+  const cW = W - PAD_CN.left - PAD_CN.right;
+  const idx = Math.round((mx - PAD_CN.left) / cW * (NCN-1));
+  const clamped = Math.max(0, Math.min(NCN-1, idx));
+
+  drawChartCN(clamped);
+
+  const d = cnData[clamped];
+  ttDateCN.textContent = fmtDateFull(d.date);
+  ttCnAvg.textContent  = '¥' + fmtNum(d.avg);
+  ttMjp.textContent    = jpmData[clamped]!==null ? '$' + fmtNum(jpmData[clamped]) : '—';
+  ttWire.textContent   = wireData[clamped]!==null ? '$' + fmtNum(wireData[clamped]) : '—';
+
+  const tipW = 150;
+  let tipX = e.clientX - rect.left + 14;
+  let tipY = Math.max(4, e.clientY - rect.top - 50);
+  if (tipX + tipW > W - 10) tipX = e.clientX - rect.left - tipW - 14;
+
+  tooltipCN.style.left = tipX + 'px';
+  tooltipCN.style.top  = tipY + 'px';
+  tooltipCN.style.display = 'block';
+});
+
+canvasCN.addEventListener('mouseleave', () => {
+  tooltipCN.style.display = 'none';
+  drawChartCN(null);
+});
+
+window.addEventListener('resize', () => drawChartCN(null));
+
+// ── Table (last 30 days) ──
+const maxStock = Math.max(...raw.map(r=>r.stock));
+const tbody = document.getElementById('tableBody');
+let lastMonth = '';
+
+tableRows.forEach((row, i) => {
+  const dt = new Date(row.date+'T00:00:00');
+  const monthKey = row.date.slice(0,7);
+  if (monthKey !== lastMonth) {
+    tbody.innerHTML += `<tr class="month-divider"><td colspan="6">── ${fmtMonth(row.date)} ──</td></tr>`;
+    lastMonth = monthKey;
+  }
+  const prevRow = tableRows[i+1] || raw[tableRows.length]; // compare with next row
+  const change = prevRow ? row.cash - prevRow.cash : 0;
+  const cls = change>0?'up':change<0?'down':'flat';
+  const arrow = change>0?'▲':change<0?'▼':'—';
+  const stockPct = (row.stock/maxStock*100).toFixed(1);
+  const cnVal = cnAlMap.get(row.date);
+
+  const isBackward = row.cash > row.fwd;
+  tbody.innerHTML += `<tr${isBackward ? ' style="background:rgba(239,68,68,0.07);border-left:3px solid #ef4444;"' : ''}>
+    <td>${fmtDateFull(row.date)}${isBackward ? ' <span style="font-size:10px;color:#ef4444;font-weight:700;letter-spacing:0.3px">▲現貨升水</span>' : ''}</td>
+    <td class="price-cell" style="${isBackward?'color:#dc2626;font-weight:700;':''}">${isBackward?'🔴 ':''} $${fmtNum(row.cash)}</td>
+    <td>${prevRow?`<span class="change-badge ${cls}">${arrow} ${Math.abs(change).toFixed(2)}</span>`:'—'}</td>
+    <td class="price-cell">$${fmtNum(row.fwd)}</td>
+    <td class="price-cell">${cnVal!==undefined ? '¥'+fmtNum(cnVal) : '—'}</td>
+    <td><div class="stock-bar-container">
+      <span style="font-size:12px;font-variant-numeric:tabular-nums">${row.stock.toLocaleString()}</span>
+      <div class="stock-bar-bg"><div class="stock-bar-fill" style="width:${stockPct}%"></div></div>
+    </div></td>
+  </tr>`;
+});
+
+// ── 台指期夜盤（由排程任務更新） ──
+const txData = { price: 49346, change: 677, pct: 1.39, updated: "2026-10-03" };
+(function renderTX() {
+  const now = new Date();
+  const h = +now.toLocaleString('en-US', { timeZone: 'Asia/Taipei', hour: '2-digit', hour12: false });
+  const stEl = document.getElementById('txState');
+  if (stEl) {
+    if      (h >= 8  && h < 14) { stEl.textContent = '日盤'; stEl.className = 'tx-badge tx-live';   }
+    else if (h >= 15 || h < 5 ) { stEl.textContent = '夜盤'; stEl.className = 'tx-badge tx-night';  }
+    else                         { stEl.textContent = '收盤'; stEl.className = 'tx-badge tx-closed'; }
+  }
+  if (!txData.price) return;
+  const dir = txData.change >= 0 ? '▲' : '▼';
+  const cls = txData.change >= 0 ? 'up' : 'down';
+  const clr = txData.change >= 0 ? '#059669' : '#dc2626';
+  document.getElementById('txPrice').textContent  = txData.price.toLocaleString('zh-TW');
+  document.getElementById('txChange').textContent = `${dir} ${Math.abs(txData.change).toLocaleString('zh-TW')}`;
+  document.getElementById('txChange').style.color = clr;
+  document.getElementById('txPct').textContent    = txData.pct != null ? `(${txData.pct >= 0 ? '+' : ''}${txData.pct.toFixed(2)}%)` : '';
+  document.getElementById('txPct').className      = `kpi-change ${cls}`;
+  if (txData.updated) document.getElementById('txUpdated').textContent = `截至 ${txData.updated}`;
+})();
+
+// ── Watermark ──
+(function(){
+  const layer = document.getElementById('watermarkLayer');
+  const text = '宇鏑有限公司 · 內部資料';
+  const itemW = 240, itemH = 130;
+  const cols = Math.ceil(window.innerWidth / itemW) + 2;
+  const rows = Math.ceil(document.body.scrollHeight / itemH) + 2;
+  const frag = document.createDocumentFragment();
+  for (let i=0;i<cols*rows;i++){
+    const div = document.createElement('div');
+    div.className = 'watermark-item';
+    div.textContent = text;
+    frag.appendChild(div);
+  }
+  layer.appendChild(frag);
+  layer.style.height = document.body.scrollHeight + 'px';
+})();
+</script>
+<script>
+(function(){
+  const fx = FX;
+  const rateOn = fxRateOn;
+  const rows = cnAl.map(r => { const rate = rateOn(r.date); return { date:r.date, a00:r.avg, rate, usd: rate ? (r.avg+1600)/1.13/rate : null }; });
+  const tb = document.getElementById('wireBody');
+  tb.innerHTML = rows.map((r,i) => {
+    const nx = rows[i+1]; const ch = (nx && r.usd!=null && nx.usd!=null) ? r.usd-nx.usd : null;
+    const chTxt = ch===null ? '—' : `<span style="color:${ch>=0?'#059669':'#dc2626'}">${ch>=0?'▲':'▼'} ${Math.abs(ch).toFixed(2)}</span>`;
+    return `<tr><td>${r.date}</td><td>${r.a00.toLocaleString('en-US')}</td><td>${r.rate?r.rate.toFixed(4):'—'}</td><td><strong>${r.usd!=null?r.usd.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'—'}</strong></td><td>${chTxt}</td></tr>`;
+  }).join('');
+})();
+</script>
+<script>
+(function(){
+  const rows = cnData.map((d,i)=>({date:d.date,a:jpmData[i],b:wireData[i]})).filter(r=>r.a!==null&&r.b!==null).map(r=>({...r,diff:r.a-r.b}));
+  const N = rows.length; if(!N) return;
+  const cv = document.getElementById('chartCanvasSP'), box = cv.parentElement;
+  const PAD = { top:16, right:isMobile?52:72, bottom:24, left:16 }, H = isMobile?150:210;
+  function draw(hi){
+    const W = box.clientWidth - 56;
+    cv.width=W*devicePixelRatio; cv.height=H*devicePixelRatio; cv.style.width=W+'px'; cv.style.height=H+'px';
+    const ctx=cv.getContext('2d'); ctx.scale(devicePixelRatio,devicePixelRatio); ctx.clearRect(0,0,W,H);
+    const cW=W-PAD.left-PAD.right, top=PAD.top, bot=H-PAD.bottom;
+    const vals=rows.map(r=>r.diff); const lo=Math.min(0,...vals), hiV=Math.max(0,...vals);
+    const mn=lo-(hiV-lo)*0.08, mx=hiV+(hiV-lo)*0.08;
+    const y=v=>top+(1-(v-mn)/(mx-mn))*(bot-top);
+    for(let t=0;t<=4;t++){const v=mn+(mx-mn)*t/4,yy=y(v);ctx.strokeStyle='#e2e8f0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD.left,yy);ctx.lineTo(PAD.left+cW,yy);ctx.stroke();
+      ctx.fillStyle='#94a3b8';ctx.font=`${isMobile?8:10}px -apple-system,sans-serif`;ctx.textAlign='left';ctx.fillText('$'+Math.round(v).toLocaleString(),PAD.left+cW+6,yy+3);}
+    const slot=cW/N, bw=Math.max(2,slot*0.7);
+    let lm='';
+    rows.forEach((r,i)=>{const x=PAD.left+slot*i+(slot-bw)/2; const y0=y(0), y1=y(r.diff);
+      ctx.fillStyle=r.diff>=0?'#e11d48':'#0d9488'; if(hi===i) ctx.globalAlpha=1; else ctx.globalAlpha=hi===null||hi===undefined?0.95:0.55;
+      ctx.fillRect(x,Math.min(y0,y1),bw,Math.max(1,Math.abs(y1-y0))); ctx.globalAlpha=1;
+      const m=r.date.slice(0,7); if(m!==lm){lm=m;ctx.fillStyle='#94a3b8';ctx.font='10px -apple-system,sans-serif';ctx.textAlign='left';ctx.fillText(new Date(r.date+'T00:00:00').toLocaleDateString('zh-TW',{month:'short'}),x,bot+16);}
+    });
+    ctx.strokeStyle='#64748b';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD.left,y(0));ctx.lineTo(PAD.left+cW,y(0));ctx.stroke();
+  }
+  draw(null);
+  const tip=document.getElementById('tooltipBoxSP');
+  cv.addEventListener('mousemove',e=>{
+    const rect=cv.getBoundingClientRect(), mx=e.clientX-rect.left, W=parseFloat(cv.style.width), cW=W-PAD.left-PAD.right;
+    const i=Math.max(0,Math.min(N-1,Math.floor((mx-PAD.left)/(cW/N)))); draw(i); const r=rows[i];
+    document.getElementById('ttDateSP').textContent=fmtDateFull(r.date);
+    document.getElementById('ttSpA').textContent='$'+fmtNum(r.a); document.getElementById('ttSpB').textContent='$'+fmtNum(r.b);
+    const d=document.getElementById('ttSpD'); d.textContent=(r.diff>=0?'+':'−')+'$'+fmtNum(Math.abs(r.diff)); d.style.color=r.diff>=0?'#e11d48':'#0d9488';
+    let tx=e.clientX-rect.left+14, ty=Math.max(4,e.clientY-rect.top-60); if(tx+150>W-10) tx=e.clientX-rect.left-164;
+    tip.style.left=tx+'px'; tip.style.top=ty+'px'; tip.style.display='block';
+  });
+  cv.addEventListener('mouseleave',()=>{tip.style.display='none';draw(null);});
+  window.addEventListener('resize',()=>draw(null));
+})();
 </script>
 </body>
 </html>
