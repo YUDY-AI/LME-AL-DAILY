@@ -950,6 +950,7 @@ const billetPremiumData = [
 
 // ── 長江鋁錠（滬鋁）平均價 CNY/MT — 資料來源：長江有色金屬網 lvdingjia.com ──
 const cnAl = [
+  { date:"2026-11-09", avg:23540 },
   { date:"2026-11-06", avg:23340 },
   { date:"2026-11-05", avg:23380 },
   { date:"2026-11-04", avg:23350 },
@@ -1863,7 +1864,7 @@ tableRows.forEach((row, i) => {
 });
 
 // ── 台指期夜盤（由排程任務更新） ──
-const txData = { price: 40298, change: 646, pct: 1.63, updated: "2026-11-08" };
+const txData = { price: 0, change: 0, pct: 0, updated: "2026-11-09" };
 (function renderTX() {
   const now = new Date();
   const h = +now.toLocaleString('en-US', { timeZone: 'Asia/Taipei', hour: '2-digit', hour12: false });
