@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LME AL DAILY｜Peter 鋁金屬價格追蹤</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f0f4f8;
+  color: #1e293b;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.container { max-width: 720px; width: 100%; }
+
+/* ── Header card ── */
+.header-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 7px solid #3D5E54;
+  border-radius: 14px;
+  padding: 32px 36px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+}
+.brand {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: #3D5E54;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+h1 {
+  font-size: clamp(36px, 7vw, 60px);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+h1 span { color: #B59565; }
+.subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  border-radius: 20px;
+  padding: 4px 11px;
+}
+.tag.green { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+.tag.gold  { background: #fefce8; border-color: #fde68a; color: #92400e; }
+.tag.red   { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+
+/* ── Stats ── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:3px;
+  background: linear-gradient(90deg, #3D5E54, #6B9A8E);
+}
+.stat-val {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+.stat-lbl {
+  font-size: 10px;
+  color: #94a3b8;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+/* ── Entry button ── */
+.entry {
+  display: block;
+  background: #3D5E54;
+  color: #ffffff;
+  text-align: center;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border-radius: 12px;
+  padding: 17px 32px;
+  transition: background 0.15s, transform 0.1s;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(61,94,84,0.20);
+}
+.entry:hover { background: #2e4940; transform: translateY(-1px); }
+.entry-sub {
+  text-align: center;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  font-size: 11px;
+  color: #cbd5e1;
+  letter-spacing: 0.5px;
+  margin-top: 36px;
+}
+
+@media (max-width: 480px) {
+  .stats { grid-template-columns: 1fr 1fr; }
+  .header-card { padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header-card">
+    <div class="brand">LME · Aluminium · Daily</div>
+    <h1>LME AL <span>DAILY</span></h1>
+    <div class="subtitle">Peter 專屬鋁金屬行情追蹤｜每日自動更新</div>
+    <div class="tags">
+      <span class="tag green">LME 鋁現金結算</span>
+      <span class="tag green">3M 遠期</span>
+      <span class="tag">LME 庫存走勢</span>
+      <span class="tag red">負價差警示</span>
+      <span class="tag gold">台指期夜盤</span>
+      <span class="tag">月均價分析</span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-val" id="latestDate">—</div>
+      <div class="stat-lbl">最新資料日期</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="latestPrice">—</div>
+      <div class="stat-lbl">最新現金價 USD/MT</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">每天</div>
+      <div class="stat-lbl">自動更新頻率</div>
+    </div>
+  </div>
+
+  <a class="entry" href="dashboard.html">📊 開啟完整 Dashboard</a>
+  <div class="entry-sub">每日 07:30 更新 · 08:00 推送至 GitHub Pages</div>
+
+  <div class="footer">LME AL DAILY · Peter 專屬情報 · 每個工作日自動更新</div>
+
+</div>
+<script>
+async function loadStats() {
+  try {
+    const res = await fetch('dashboard.html');
+    const text = await res.text();
+    const dateM = text.match(/date:"(\d{4}-\d{2}-\d{2})"/);
+    if (dateM) document.getElementById('latestDate').textContent = dateM[1];
+    const priceM = text.match(/cash:([\d.]+)/);
+    if (priceM) document.getElementById('latestPrice').textContent = '$' + Number(priceM[1]).toLocaleString();
+  } catch(e) {}
+}
+loadStats();
+</script>
+</body>
+</html>
