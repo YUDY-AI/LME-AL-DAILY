@@ -551,7 +551,7 @@
     <div class="header-meta">
       <div class="header-badge badge-ip"><span>智慧財產權</span>宇鏑有限公司</div>
       <div class="header-badge badge-author"><span>撰寫人</span>Peter</div>
-      <div class="header-badge badge-data"><span>資料截至</span>2026-11-20</div>
+      <div class="header-badge badge-data"><span>資料截至</span>2026-11-22</div>
       <div class="header-badge badge-legal"><span>法律顧問</span>略策股份有限公司</div>
     </div>
   </div>
@@ -692,6 +692,8 @@
 
 <script>
 const raw = [
+  { date:"2026-11-20", cash:3184.50, fwd:2831.50, stock:223525 },
+  { date:"2026-11-19", cash:3105.00, fwd:2845.00, stock:224425 },
   { date:"2026-11-18", cash:3095.00, fwd:2865.00, stock:226150 },
   { date:"2026-11-17", cash:3060.50, fwd:2940.00, stock:220350 },
   { date:"2026-11-16", cash:3332.00, fwd:3020.00, stock:221900 },
@@ -1840,7 +1842,7 @@ tableRows.forEach((row, i) => {
 });
 
 // ── 台指期夜盤（由排程任務更新） ──
-const txData = { price: 38107, change: -500, pct: -1.30, updated: "2026-11-20" };
+const txData = { price: 33919, change: -1881, pct: -5.25, updated: "2026-11-22" };
 (function renderTX() {
   const now = new Date();
   const h = +now.toLocaleString('en-US', { timeZone: 'Asia/Taipei', hour: '2-digit', hour12: false });
