@@ -551,7 +551,7 @@
     <div class="header-meta">
       <div class="header-badge badge-ip"><span>智慧財產權</span>宇鏑有限公司</div>
       <div class="header-badge badge-author"><span>撰寫人</span>Peter</div>
-      <div class="header-badge badge-data"><span>資料截至</span>2026-11-23</div>
+      <div class="header-badge badge-data"><span>資料截至</span>2026-11-24</div>
       <div class="header-badge badge-legal"><span>法律顧問</span>略策股份有限公司</div>
     </div>
   </div>
@@ -943,6 +943,7 @@ const billetPremiumData = [
 
 // ── 長江鋁錠（滬鋁）平均價 CNY/MT — 資料來源：長江有色金屬網 lvdingjia.com ──
 const cnAl = [
+  { date:"2026-11-23", avg:22590 },
   { date:"2026-11-20", avg:22330 },
   { date:"2026-11-19", avg:22280 },
   { date:"2026-11-18", avg:22530 },
@@ -1842,7 +1843,7 @@ tableRows.forEach((row, i) => {
 });
 
 // ── 台指期夜盤（由排程任務更新） ──
-const txData = { price: 33919, change: -1881, pct: -5.25, updated: "2026-11-23" };
+const txData = { price: 40055, change: 3396, pct: 9.26, updated: "2026-11-24" };
 (function renderTX() {
   const now = new Date();
   const h = +now.toLocaleString('en-US', { timeZone: 'Asia/Taipei', hour: '2-digit', hour12: false });
