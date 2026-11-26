@@ -551,7 +551,7 @@
     <div class="header-meta">
       <div class="header-badge badge-ip"><span>智慧財產權</span>宇鏑有限公司</div>
       <div class="header-badge badge-author"><span>撰寫人</span>Peter</div>
-      <div class="header-badge badge-data"><span>資料截至</span>2026-11-26</div>
+      <div class="header-badge badge-data"><span>資料截至</span>2026-11-27</div>
       <div class="header-badge badge-legal"><span>法律顧問</span>略策股份有限公司</div>
     </div>
   </div>
@@ -692,6 +692,7 @@
 
 <script>
 const raw = [
+  { date:"2026-11-25", cash:2849.00, fwd:2760.00, stock:219200 },
   { date:"2026-11-24", cash:3120.50, fwd:2789.00, stock:220350 },
   { date:"2026-11-23", cash:3201.50, fwd:2834.00, stock:221400 },
   { date:"2026-11-20", cash:3184.50, fwd:2831.50, stock:223525 },
@@ -945,6 +946,7 @@ const billetPremiumData = [
 
 // ── 長江鋁錠（滬鋁）平均價 CNY/MT — 資料來源：長江有色金屬網 lvdingjia.com ──
 const cnAl = [
+  { date:"2026-11-26", avg:22680 },
   { date:"2026-11-25", avg:22310 },
   { date:"2026-11-24", avg:22630 },
   { date:"2026-11-23", avg:22590 },
@@ -1847,7 +1849,7 @@ tableRows.forEach((row, i) => {
 });
 
 // ── 台指期夜盤（由排程任務更新） ──
-const txData = { price: 38482, change: -1842, pct: -4.57, updated: "2026-11-26" };
+const txData = { price: 38397, change: 274, pct: 0.72, updated: "2026-11-27" };
 (function renderTX() {
   const now = new Date();
   const h = +now.toLocaleString('en-US', { timeZone: 'Asia/Taipei', hour: '2-digit', hour12: false });
